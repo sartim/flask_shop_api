@@ -9,7 +9,6 @@ from flask_jwt_extended import JWTManager
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from app.config import DevelopmentConfig, ProductionConfig, TestingConfig
-from app.core.connection import elastic_search
 
 dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.env'))
 load_dotenv(dotenv_path)
