@@ -1,6 +1,6 @@
 # Flask Shop API
 
-REST API made with flask framework which runs as a socket io server
+REST API which exposes endpoints both for an online shop and a CMS admin. It's developed using flask framework which runs as a socketio server.
 
 ## Setup
 
