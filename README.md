@@ -1,6 +1,6 @@
 # Flask Shop API
 
-REST API which exposes endpoints both for an online shop and a CMS admin. It's developed using flask framework which runs as a socketio server.
+REST API which exposes endpoints both for an online shop and a CMS admin. It's developed using flask framework which runs as a socketio server. The database configuration for the app relies on PostgreSQL.
 
 ## Setup
 
@@ -19,7 +19,19 @@ REST API which exposes endpoints both for an online shop and a CMS admin. It's d
 
 **Add dotenv to project root**
 
-You should create a .env file on the project root. You can get this on the repo url https://github.com/hivisasapro/hivisasa-stage-dotenv
+You should create a .env file on the project root using the following format:
+
+    DEV=TRUE
+    TEST=FALSE
+    PROD=FALSE
+    DATABASE_URL={DB_URL}
+    SECRET_KEY={SECRET}
+    PAGINATE_BY=20
+    ADMIN_EMAIL={EMAIL}
+    APP_EMAIL={EMAIL}
+    APP_EMAIL_PASSWORD={PASSWORD}
+    LOG_LEVEL=DEBUG
+
 
 **Running app using heroku cli**
 
