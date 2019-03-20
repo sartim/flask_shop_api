@@ -27,15 +27,10 @@ class GenerateJwt(MethodView):
                 # Identity can be any data that is json serializable
                 access_token = create_access_token(identity=email, expires_delta=False)
                 refresh_token = create_refresh_token(identity=email)
-                results = {
-                    "access_token": access_token,
-                    "refresh_token": refresh_token,
-                    "user": {
-                        "id": user.id,
-                        "name": user.name,
-                        "email": user.email
-                    }
-                }
+                results = dict(
+                    access_token=access_token, refresh_token=refresh_token,
+                    user=dict(id=user.id, full_name="{} {}".format(user.first_name, user.last_name, email=user.email))
+                )
                 return jsonify(results), 200
             else:
                 app.logger.warning("User with the email {0} does not exist".format(email), extra={'stack': True})
