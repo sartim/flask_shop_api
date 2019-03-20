@@ -16,7 +16,7 @@ class AccountUser(Base):
     password = db.Column(db.String(255), nullable=True)
     token = db.Column(db.String(255), nullable=True)
     image = db.Column(db.Text, nullable=True)
-    is_active = db.Boolean(db.Boolean, default=False)
+    is_active = db.Column(db.Boolean, default=False)
 
     roles = db.relationship(AccountUserRole, backref='account_user_roles', cascade="save-update, merge, delete",
                             lazy=True)
