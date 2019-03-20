@@ -6,6 +6,7 @@ REST API which exposes endpoints both for an online shop and a CMS admin. It's d
 
 **Requirements**
 
+* Python 3+
 * Virtualenv
 * Redis
 * Heroku CLI
