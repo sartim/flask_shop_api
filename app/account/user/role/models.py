@@ -6,7 +6,7 @@ class AccountUserRole(db.Model):
 
     __tablename__ = 'account_user_roles'
 
-    user_id = db.Column(db.String(255), db.ForeignKey('account_users.id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('account_users.id'), primary_key=True)
     role_id = db.Column(db.Integer, db.ForeignKey('account_roles.id'), primary_key=True)
     created_date = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_date = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
