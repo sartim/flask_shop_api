@@ -11,11 +11,17 @@ REST API which exposes endpoints both for an online shop and a CMS admin. It's d
 * Heroku CLI
 
 
-**Setup**
+**Create virtual environment & install requirements**
 
     $ virtualenv <envname> -p python3
     $ source <envname>/bin/activate
     $ pip install -r requirements.txt
+
+**Make migrations**
+
+    $ python manage.py db init
+    $ python manage.py db migrate
+    $ python manage.py db upgrade
 
 **Add dotenv to project root**
 
