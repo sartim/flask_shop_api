@@ -16,7 +16,7 @@ class GenerateJwt(MethodView):
         email = request.json.get('email', None)
         password = request.json.get('password', None)
         if not email:
-            return jsonify({"msg": "Missing username parameter"}), 400
+            return jsonify({"msg": "Missing email parameter"}), 400
         if not password:
             return jsonify({"msg": "Missing password parameter"}), 400
 
