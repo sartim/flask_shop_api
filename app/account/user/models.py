@@ -35,3 +35,11 @@ class AccountUser(Base):
 
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, self.id)
+
+    @classmethod
+    def get_user_by_email(cls, email):
+        """
+        Get user by email
+        :return:
+        """
+        return cls.query.filter_by(email=email).first()
