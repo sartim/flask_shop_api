@@ -51,6 +51,16 @@ def add_countries():
     db.session.commit()
 
 
+def add_demo_user():
+    user = AccountUser(first_name="Demo", last_name="User", email="demo@mail.com", password="qwertytrewq",
+                       is_active=True)
+    db.session.add(user)
+    db.session.commit()
+    user_role = AccountUserRole(user_id=user.id, role_id=3)
+    db.session.add(user_role)
+    db.session.commit()
+
+
 @manager.command
 def create(default_data=True, sample_data=False):
     """
@@ -60,6 +70,7 @@ def create(default_data=True, sample_data=False):
     """
     db.create_all()
     add_roles()
+    add_demo_user()
     sys.stdout.write("Finished creating tables!!! \n")
 
 
