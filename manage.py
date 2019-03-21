@@ -10,6 +10,7 @@ from app import db
 from app.account.role.models import AccountRole
 from app.account.user.models import AccountUser
 from app.account.user.role.models import AccountUserRole
+from app.country.models import Country
 from app.helpers import validator, utils
 from app.helpers.socket_utils import *
 from app.core import models
@@ -31,10 +32,20 @@ def runserver():
     socketio.run(app, host='0.0.0.0', port=5000)
 
 
-def add_default_roles():
+def add_roles():
     objects = [
         AccountRole(name='SUPERUSER'), AccountRole(name='ADMIN'), AccountRole(name='STAFF'),
         AccountRole(name='CLIENT')
+    ]
+    db.session.bulk_save_objects(objects)
+    db.session.commit()
+
+
+def add_countries():
+    # TODO Add all countries from script
+    objects = [
+        Country(name='UK'), Country(name='US'), Country(name='RUSSIA'),
+        Country(name='CHINA')
     ]
     db.session.bulk_save_objects(objects)
     db.session.commit()
@@ -48,7 +59,7 @@ def create(default_data=True, sample_data=False):
     :param sample_data:
     """
     db.create_all()
-    add_default_roles()
+    add_roles()
     sys.stdout.write("Finished creating tables!!! \n")
 
 
@@ -78,7 +89,8 @@ def recreate(default_data=True, sample_data=False):
 def createsuperuser():
     """Creates the superuser"""
 
-    full_name = prompt("Full Name")
+    first_name = prompt("First Name")
+    last_name = prompt("Last Name")
     email = prompt("Email")
     validate_email = validator.email_validator(email)
     password = prompt_pass("Password")
@@ -97,11 +109,13 @@ def createsuperuser():
 
     if validate_email and not validate_pwd:
         try:
-            id = uuid.uuid4()
             password = utils.generate_password_hash(password)
-            user = AccountUser(id=id, name=full_name, email=email, password=password)
-            AccountUserRole(user_id=user.id, role_id=1)
+            user = AccountUser(first_name=first_name, last_name=last_name, email=email, password=password,
+                               is_active=True)
             db.session.add(user)
+            db.session.commit()
+            user_role = AccountUserRole(user_id=user.id, role_id=1)
+            db.session.add(user_role)
             db.session.commit()
             sys.stdout.write("Successfully created admin account \n")
         except Exception as e:
