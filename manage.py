@@ -52,8 +52,8 @@ def add_countries():
 
 
 def add_demo_user():
-    user = AccountUser(first_name="Demo", last_name="User", email="demo@mail.com", password="qwertytrewq",
-                       is_active=True)
+    user = AccountUser(first_name="Demo", last_name="User", email="demo@mail.com",
+                       password=utils.generate_password_hash("qwertytrewq"), is_active=True)
     db.session.add(user)
     db.session.commit()
     user_role = AccountUserRole(user_id=user.id, role_id=3)
