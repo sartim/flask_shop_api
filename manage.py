@@ -10,7 +10,6 @@ from app import db
 from app.account.role.models import AccountRole
 from app.account.user.models import AccountUser
 from app.account.user.role.models import AccountUserRole
-from app.country.models import Country
 from app.helpers import validator, utils
 from app.helpers.socket_utils import *
 from app.core import models
