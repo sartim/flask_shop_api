@@ -4,7 +4,7 @@ import pycountry
 
 def generate_password_hash(password, rounds=14, prefix=b'2b'):
     """
-    Generate passsword hash with bcrypt having default prefix being 2b if not parsed. Also default
+    Generate password hash with bcrypt having default prefix being 2b if not parsed. Also default
     log rounds is 14.
     :param password:
     :param rounds:
