@@ -1,8 +1,10 @@
 import functools
+import flask
 
 from flask_jwt_extended import current_user
 from flask_socketio import emit, join_room, leave_room, send
-from app import app, socketio
+from app import app, socketio, db
+from app.account.user.authenticated.models import AccountUserAuthenticated
 from app.account.user.models import AccountUser
 
 
@@ -26,6 +28,8 @@ def handle_my_custom_event(data):
 @socketio.on('my event', namespace='/notification')
 def my_event(msg):
     user = AccountUser.get_by_id(msg['data'])
+    db.session.add((AccountUserAuthenticated(user.id, flask.request.sid)))
+    db.session.commit()
     data = {'message': '{0} is online'.format(user.name), 'status': 'connect', 'id': user.id}
     socketio.emit('connection response', data, namespace='/notification')
     app.logger.info('Connection established by {}'.format(msg['data']))
@@ -46,6 +50,9 @@ def connect_handler():
 @socketio.on('disconnect', namespace='/notification')
 def disconnect():
     app.logger.info("Client disconnecting...")
+    user = AccountUserAuthenticated.get_by_session_id(flask.request.sid)
+    user.delete()
+    user.save()
     online_users_data = AccountUser.get_online_users()
     socketio.emit('online users', online_users_data, namespace='/notification')
     app.logger.info("Socket sent a message to notification namespace")
