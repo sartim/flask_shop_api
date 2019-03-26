@@ -3,7 +3,7 @@ from app import db
 
 class AccountUserAuthenticated(db.Model):
 
-    __tablename__ = 'account_user_roles'
+    __tablename__ = 'account_user_authenticated'
 
     user_id = db.Column(db.Integer, db.ForeignKey('account_users.id'), primary_key=True)
     session_id = db.Column(db.String(255))
