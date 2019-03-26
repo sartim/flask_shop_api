@@ -17,12 +17,13 @@ class AccountUser(Base):
     token = db.Column(db.String(255), nullable=True)
     image = db.Column(db.Text, nullable=True)
     is_active = db.Column(db.Boolean, default=False)
+    is_authenticated = db.Column(db.Boolean, default=False)
 
     roles = db.relationship(AccountUserRole, backref='account_user_roles', cascade="save-update, merge, delete",
                             lazy=True)
 
     def __init__(self, first_name=None, middle_name=None, last_name=None, email=None, phone=None, password=None,
-                 token=None, image=None, is_active=None):
+                 token=None, image=None, is_active=None, is_authenticated=None):
         self.first_name = first_name
         self.middle_name = middle_name
         self.last_name = last_name
@@ -32,6 +33,7 @@ class AccountUser(Base):
         self.token = token
         self.image = image
         self.is_active = is_active
+        self.is_authenticated = is_authenticated
 
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, self.id)
