@@ -30,6 +30,8 @@ REST API which exposes endpoints both for an online shop and a CMS admin. It's d
 
 You should create a .env file on the project root using the following format:
 
+When using PostgreSQL DB_URL
+
     DEV=TRUE
     TEST=FALSE
     PROD=FALSE
@@ -41,6 +43,17 @@ You should create a .env file on the project root using the following format:
     APP_EMAIL_PASSWORD={PASSWORD}
     LOG_LEVEL=DEBUG
 
+When using sqlite for test
+
+    DEV=FALSE
+    TEST=TRUE
+    PROD=FALSE
+    SECRET_KEY=my_precious
+    PAGINATE_BY=20
+    ADMIN_EMAIL=admin@mail.com
+    APP_EMAIL=app@email.com
+    APP_EMAIL_PASSWORD=letmein
+    LOG_LEVEL=DEBUG
 
 **Running app using heroku cli**
 
@@ -54,3 +67,9 @@ You should create a .env file on the project root using the following format:
 
     $ gunicorn --worker-class eventlet -w 1 wsgi:app
 
+**Running unittests**
+    
+First setup the .env for test environment then run the following command from project root:
+    
+    $ pytest
+    
