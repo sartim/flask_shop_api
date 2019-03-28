@@ -10,11 +10,6 @@ class BaseConfig(object):
     """
     Callable Base Config which takes an object
     """
-    # Define the application directory
-    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-
-    # SQLite for this example
-    # Define the database - we are working with
     SQLALCHEMY_DATABASE_URI = '{}'. \
         format(os.environ.get('DATABASE_URL'))
 
@@ -51,3 +46,7 @@ class TestingConfig(BaseConfig):
     """
     DEBUG = False
     BCRYPT_LOG_ROUNDS = 1
+    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'dev.sqlite')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
