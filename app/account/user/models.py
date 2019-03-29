@@ -43,7 +43,10 @@ class AccountUser(Base):
     def get_online_users(cls):
         sessions = AccountUserAuthenticated.get_all()
         if sessions:
-            results = [{"id": user.id, "name": "{} {}".format(user.first_name, user.last_name)} for user in sessions]
+            results = []
+            for session in sessions:
+                user = AccountUser.get_by_id(session.user_id)
+                results.append({"id": user.id, "name": "{} {}".format(user.first_name, user.last_name)})
             data = {"count": len(results), "results": results}
             return data
         return None
