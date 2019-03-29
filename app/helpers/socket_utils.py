@@ -35,7 +35,7 @@ def my_event(msg):
     else:
         db.session.add((AccountUserAuthenticated(user.id, flask.request.sid)))
         db.session.commit()
-    data = {'message': '{0} is online'.format(user.name), 'status': 'connect', 'id': user.id}
+    data = {'message': '{0} is online'.format(user.get_full_name()), 'status': 'connect', 'id': user.id}
     socketio.emit('connection response', data, namespace='/notification')
     app.logger.info('Connection established by {}'.format(msg['data']))
     online_users_data = AccountUser.get_online_users()
