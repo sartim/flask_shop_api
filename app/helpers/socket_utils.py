@@ -32,6 +32,7 @@ def my_event(msg):
     if session:
         session.delete()
         session.save()
+    else:
         db.session.add((AccountUserAuthenticated(user.id, flask.request.sid)))
         db.session.commit()
     data = {'message': '{0} is online'.format(user.name), 'status': 'connect', 'id': user.id}
@@ -54,9 +55,9 @@ def connect_handler():
 @socketio.on('disconnect', namespace='/notification')
 def disconnect():
     app.logger.info("Client disconnecting...")
-    user = AccountUserAuthenticated.get_by_session_id(flask.request.sid)
-    user.delete()
-    user.save()
+    session = AccountUserAuthenticated.get_by_session_id(flask.request.sid)
+    session.delete()
+    session.save()
     online_users_data = AccountUser.get_online_users()
     socketio.emit('online users', online_users_data, namespace='/notification')
     app.logger.info("Socket sent a message to notification namespace")
