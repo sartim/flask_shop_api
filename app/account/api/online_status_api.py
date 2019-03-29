@@ -7,7 +7,6 @@ from app.account.user.models import AccountUser
 class OnlineStatus(MethodView):
     def get(self):
         data = AccountUser.get_online_users()
-        print(data)
         if data:
             return jsonify(data)
         return jsonify({"count": 0, "results": []})
