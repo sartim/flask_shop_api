@@ -28,8 +28,13 @@ def handle_my_custom_event(data):
 @socketio.on('my event', namespace='/notification')
 def my_event(msg):
     user = AccountUser.get_by_id(msg['data'])
-    db.session.add((AccountUserAuthenticated(user.id, flask.request.sid)))
-    db.session.commit()
+    session = AccountUserAuthenticated.get_by_user_id(user.id)
+    if session:
+        user.session_id = flask.request.sid
+        user.save()
+    else:
+        db.session.add((AccountUserAuthenticated(user.id, flask.request.sid)))
+        db.session.commit()
     data = {'message': '{0} is online'.format(user.name), 'status': 'connect', 'id': user.id}
     socketio.emit('connection response', data, namespace='/notification')
     app.logger.info('Connection established by {}'.format(msg['data']))
