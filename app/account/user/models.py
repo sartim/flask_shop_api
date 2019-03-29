@@ -39,6 +39,13 @@ class AccountUser(Base):
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, self.id)
 
+    def get_full_name(self):
+        """
+        Returns user full name
+        :return:
+        """
+        return "{} {}".format(self.first_name, self.last_name)
+
     @classmethod
     def get_online_users(cls):
         sessions = AccountUserAuthenticated.get_all()
