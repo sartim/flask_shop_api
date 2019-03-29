@@ -1,4 +1,4 @@
-from app import db
+from app import db, app
 
 
 class AccountUserAuthenticated(db.Model):
@@ -28,3 +28,18 @@ class AccountUserAuthenticated(db.Model):
     @classmethod
     def get_all(cls):
         return cls.query.all()
+
+    def delete(self):
+        try:
+            db.session.delete(self)
+        except Exception:
+            app.logger.exception(
+                'Could not delete {} instance.'.format(self.__name__))
+
+    @classmethod
+    def save(cls):
+        try:
+            db.session.commit()
+            app.logger.debug('Successfully committed AccountUser instance')
+        except Exception:
+            app.logger.exception('Exception occurred. Could not save {} instance.'.format(cls.__name__))
