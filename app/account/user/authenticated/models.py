@@ -17,9 +17,13 @@ class AccountUserAuthenticated(db.Model):
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, self.user_id)
 
-
+    @classmethod
     def get_by_session_id(cls, sid):
         return cls.query.filter_by(session_id=sid).first()
+
+    @classmethod
+    def get_by_user_id(cls, user_id):
+        return cls.query.filter_by(user_id=user_id).first()
 
     @classmethod
     def get_all(cls):
