@@ -41,7 +41,7 @@ class AccountUser(Base):
 
     @classmethod
     def get_online_users(cls):
-        sessions = cls.sessions
+        sessions = AccountUserAuthenticated.get_all()
         if sessions:
             results = [{"id": user.id, "name": "{} {}".format(user.first_name, user.last_name)} for user in sessions]
             data = {"count": len(results), "results": results}
