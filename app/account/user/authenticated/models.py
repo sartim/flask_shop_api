@@ -20,3 +20,7 @@ class AccountUserAuthenticated(db.Model):
 
     def get_by_session_id(cls, sid):
         return cls.query.filter_by(session_id=sid).first()
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
