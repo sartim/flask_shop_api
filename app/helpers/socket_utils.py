@@ -30,9 +30,8 @@ def my_event(msg):
     user = AccountUser.get_by_id(msg['data'])
     session = AccountUserAuthenticated.get_by_user_id(user.id)
     if session:
-        user.session_id = flask.request.sid
-        user.save()
-    else:
+        session.delete()
+        session.save()
         db.session.add((AccountUserAuthenticated(user.id, flask.request.sid)))
         db.session.commit()
     data = {'message': '{0} is online'.format(user.name), 'status': 'connect', 'id': user.id}
