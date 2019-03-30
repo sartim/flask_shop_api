@@ -40,18 +40,15 @@ def add_roles():
     db.session.commit()
 
 
-def add_countries():
-    # TODO Add all countries from script
-    objects = [
-        Country(name='UK'), Country(name='US'), Country(name='RUSSIA'),
-        Country(name='CHINA')
-    ]
-    db.session.bulk_save_objects(objects)
-    db.session.commit()
-
-
-def add_demo_user():
+def add_demo_users():
     user = AccountUser(first_name="Demo", last_name="User", email="demo@mail.com",
+                       password=utils.generate_password_hash("qwertytrewq"), is_active=True)
+    db.session.add(user)
+    db.session.commit()
+    user_role = AccountUserRole(user_id=user.id, role_id=3)
+    db.session.add(user_role)
+    db.session.commit()
+    user = AccountUser(first_name="Demo2", last_name="User", email="demo2@mail.com",
                        password=utils.generate_password_hash("qwertytrewq"), is_active=True)
     db.session.add(user)
     db.session.commit()
@@ -69,7 +66,7 @@ def create(default_data=True, sample_data=False):
     """
     db.create_all()
     add_roles()
-    add_demo_user()
+    add_demo_users()
     sys.stdout.write("Finished creating tables!!! \n")
 
 
