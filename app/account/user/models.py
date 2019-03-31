@@ -7,7 +7,6 @@ from app import db
 class AccountUser(Base):
 
     __tablename__ = 'account_users'
-    __searchable__ = ['id', 'name', 'email', 'phone_number']
 
     first_name = db.Column(db.String(255))
     middle_name = db.Column(db.String(255), nullable=True)
