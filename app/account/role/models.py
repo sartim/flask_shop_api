@@ -5,7 +5,7 @@ class AccountRole(Base):
 
     __tablename__ = 'account_roles'
 
-    name = db.Column(db.String(255))
+    name = db.Column(db.String(255), unique=True)
 
     def __init__(self, name=None):
         self.name = name
