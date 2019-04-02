@@ -1,5 +1,5 @@
 import logging
-import sys
+import os
 
 from app.helpers.socket_utils import *
 from app import app, socketio
