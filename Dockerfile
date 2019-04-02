@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
 # Setup flask application
 RUN mkdir -p /home/ubuntu/app
 ADD ./app /home/ubuntu/app
-ADD ./tests /home/ubuntu/app
+ADD ./testing /home/ubuntu/app
 ADD manage.py /home/ubuntu/app
 ADD wsgi.py /home/ubuntu/app
 ADD requirements.txt /home/ubuntu/app
