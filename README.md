@@ -69,15 +69,7 @@ When using sqlite for test
     
 **Building & running on docker**
 
-If you have docker installed you can optionally deploy app using docker by following the following steps
-
     $ docker build -t flask-shop-api:latest .
-    $ docker run -it flask-shop-api
-    
-_Executing container_
-
-    $ docker ps
-    $ docker exec -i -t <containerid> bash
 
 **Running unittests**
     
