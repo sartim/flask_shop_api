@@ -1,8 +1,13 @@
+import os
+from sqlalchemy import desc
+
 from app.core.models import Base
 from app import db
 
 
 class Product(Base):
+    __tablename__ = 'products'
+
     name = db.Column(db.String(255))
     brand = db.Column(db.String(255))
     items = db.Column(db.Integer)
@@ -21,3 +26,19 @@ class Product(Base):
 
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, self.id)
+
+    @classmethod
+    def get_all(cls, page):
+        products = cls.query.order_by(desc(cls.posted_date)).filter_by(is_active=True). \
+            paginate(page=page, per_page=int(os.environ.get('PAGINATE_BY')), error_out=True)
+        results = []
+        for product in products.items:
+            data = cls.response(product)
+            results.append(data)
+        data = cls.response_dict(products, results, '/product/')
+        return data
+
+    @classmethod
+    def response(cls, product):
+        return dict(name=product.name, brand=product.brand, items=product.items, price=product.price,
+                    category=product.category.name)
