@@ -1,7 +1,9 @@
 import logging
 import sys
+import csv
 import uuid
 import os
+import random
 
 from click import prompt
 from flask_migrate import MigrateCommand, Migrate
@@ -14,6 +16,8 @@ from app.helpers import validator, utils
 from app.helpers.socket_utils import *
 from app.core import models
 from app.api_imports import *
+from app.product.category.models import ProductCategory
+from app.product.models import Product
 
 
 def _make_context():
@@ -127,6 +131,34 @@ def createsuperuser():
             sys.stdout.write("Successfully created admin account \n")
         except Exception as e:
             sys.stdout.write(str(e))
+
+
+@manager.command
+def populate_product_data():
+    """"
+    ['id', 'prices_amountmax', 'prices_amountmin', 'prices_availability', 'prices_condition',
+    'prices_currency', 'prices_dateseen', 'prices_issale', 'prices_merchant', 'prices_shipping',
+    'prices_sourceurls', 'asins', 'brand', 'categories', 'dateadded', 'dateupdated', 'ean', 'imageurls',
+    'keys', 'manufacturer', 'manufacturernumber', 'name', 'primarycategories', 'sourceurls', 'upc', 'weight']
+    """
+    with open('datafinitielectronicsproductspricingdata.csv') as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        next(csv_reader)
+        for row in csv_reader:
+            price = row[1]
+            brand = row[12]
+            image_urls = row[17]
+            name = row[21]
+            category = row[22]
+            items = random.randint(5, 50)
+
+            product = Product.get_or_create_by_name(name)
+            product.price = price
+            product.brand = brand
+            product.image_urls = image_urls
+            category = ProductCategory.get_or_create_by_name(category)
+            product.category_id = category.id
+            product.items = items
 
 
 if __name__ == '__main__':
