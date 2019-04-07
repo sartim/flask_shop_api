@@ -1,8 +1,9 @@
 import os
-from sqlalchemy import desc
 
+from sqlalchemy import desc
 from app.core.models import Base
 from app import db
+from app.product.category.models import ProductCategory
 
 
 class Product(Base):
@@ -15,6 +16,7 @@ class Product(Base):
     price = db.Column(db.DECIMAL(precision=10, scale=2))
     category_id = db.Column(db.Integer, db.ForeignKey('product_categories.id'))
 
+    category = db.relationship(ProductCategory, backref='account_role', lazy=True)
 
     def __init__(self, name=None, brand=None, items=None, image_urls=None, price=None, category_id=None):
         self.name = name
@@ -29,7 +31,7 @@ class Product(Base):
 
     @classmethod
     def get_all(cls, page):
-        products = cls.query.order_by(desc(cls.posted_date)).filter_by(is_active=True). \
+        products = cls.query.order_by(desc(cls.created_date)).\
             paginate(page=page, per_page=int(os.environ.get('PAGINATE_BY')), error_out=True)
         results = []
         for product in products.items:
@@ -40,5 +42,6 @@ class Product(Base):
 
     @classmethod
     def response(cls, product):
-        return dict(name=product.name, brand=product.brand, items=product.items, price=product.price,
-                    category=product.category.name)
+        return dict(name=product.name, brand=product.brand, items=product.items,
+                    price=float(product.price) if product.price else None,
+                    category=product.category.name if product.category else None)
