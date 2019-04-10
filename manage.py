@@ -1,7 +1,6 @@
 import logging
 import sys
 import csv
-import uuid
 import os
 import random
 
