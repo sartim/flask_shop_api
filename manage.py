@@ -12,9 +12,14 @@ from app import db
 from app.account.role.models import AccountRole
 from app.account.user.models import AccountUser
 from app.account.user.role.models import AccountUserRole
+from app.product.models import Product
+from app.product.category.models import ProductCategory
+from app.order.models import Order
+from app.order.status.models import OrderStatus
 from app.helpers import validator, utils
 from app.helpers.socket_utils import *
 from app.core import models
+from app.helpers.jwt_handlers import *
 from app.api_imports import *
 from app.product.category.models import ProductCategory
 from app.product.models import Product
@@ -134,6 +139,11 @@ def createsuperuser():
 
 
 @manager.command
+def populate_client_data():
+    pass
+
+
+@manager.command
 def populate_product_data():
     """"
     ['id', 'prices_amountmax', 'prices_amountmin', 'prices_availability', 'prices_condition',
@@ -144,6 +154,7 @@ def populate_product_data():
     with open('datafinitielectronicsproductspricingdata.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         next(csv_reader)
+        count = 0
         for row in csv_reader:
             price = row[1]
             brand = row[12]
@@ -159,6 +170,14 @@ def populate_product_data():
             category = ProductCategory.get_or_create_by_name(category)
             product.category_id = category.id
             product.items = items
+            count+=1
+            if count == 2000:
+                break
+
+@manager.command
+def populate_order_data():
+    pass
+
 
 
 if __name__ == '__main__':
