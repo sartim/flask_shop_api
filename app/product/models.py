@@ -42,6 +42,7 @@ class Product(Base):
 
     @classmethod
     def response(cls, product):
-        return dict(name=product.name, brand=product.brand, items=product.items,
+        return dict(id=product.id, name=product.name, brand=product.brand, items=product.items,
                     price=float(product.price) if product.price else None,
-                    category=product.category.name if product.category else None)
+                    category=product.category.name if product.category else None,
+                    created_date = product.created_date)
