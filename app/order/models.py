@@ -1,9 +1,11 @@
+from app.core.mixins import SearchableMixin
 from app.core.models import Base
 from app import db
 
 
-class Order(Base):
+class Order(Base, SearchableMixin):
     __tablename__ = 'orders'
+    __searchable__ = ['id']
 
     user_id = db.Column(db.Integer, db.ForeignKey('account_users.id'), primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), primary_key=True)

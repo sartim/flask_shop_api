@@ -1,12 +1,14 @@
 from app.account.user.authenticated.models import AccountUserAuthenticated
 from app.account.user.role.models import AccountUserRole
+from app.core.mixins import SearchableMixin
 from app.core.models import Base
 from app import db
 
 
-class AccountUser(Base):
+class AccountUser(Base, SearchableMixin):
 
     __tablename__ = 'account_users'
+    __searchable__ = ['first_name', 'middle_name', 'last_name', 'email', 'phone']
 
     first_name = db.Column(db.String(255))
     middle_name = db.Column(db.String(255), nullable=True)

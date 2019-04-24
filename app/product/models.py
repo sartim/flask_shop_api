@@ -1,13 +1,16 @@
 import os
 
 from sqlalchemy import desc
+from app.core.mixins import SearchableMixin
 from app.core.models import Base
 from app import db
 from app.product.category.models import ProductCategory
 
 
-class Product(Base):
+class Product(Base, SearchableMixin):
+
     __tablename__ = 'products'
+    __searchable__ = ['name', 'brand', 'category']
 
     name = db.Column(db.String(255))
     brand = db.Column(db.String(255))
