@@ -65,6 +65,12 @@ def add_demo_users():
     db.session.commit()
 
 
+def add_order_statuses():
+    objects = [OrderStatus(name='DRAFT'), OrderStatus(name='PENDING'), OrderStatus('COMPLETE') ]
+    db.session.bulk_save_objects(objects)
+    db.session.commit()
+
+
 @manager.command
 def create(default_data=True, sample_data=False):
     """
@@ -75,6 +81,7 @@ def create(default_data=True, sample_data=False):
     db.create_all()
     add_roles()
     add_demo_users()
+    add_order_statuses()
     sys.stdout.write("Finished creating tables!!! \n")
 
 
