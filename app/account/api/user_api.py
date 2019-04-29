@@ -58,17 +58,17 @@ class AccountView(MethodView):
                 app.logger.warning('User made request with invalid fields: \n {}'.format(body))
                 return jsonify(jsonify=validated['data'])
             first_name = body['first_name']
-            middle_name = body['middle_name']
+            middle_name = body['middle_name'] if 'middle_name' in body else None
             last_name = body['last_name']
             email = body['email']
             phone = body['phone']
             password = utils.generate_password_hash(body['password'], app.config.get('BCRYPT_LOG_ROUNDS'))
-            user_by_email = AccountUser.get_user_with_unique(email=email)
+            user_by_email = AccountUser.get_user_by_email(email=email)
             if user_by_email:
                 message = 'User with the email {} exists'.format(email)
                 app.logger.warning(message)
                 return jsonify(message=message), 400
-            user_by_phone = AccountUser.get_user_with_unique(phone=phone)
+            user_by_phone = AccountUser.get_user_by_phone(phone=phone)
             if user_by_phone:
                 message = 'User with the phone {} exists'.format(phone)
                 app.logger.warning(message)
@@ -78,10 +78,9 @@ class AccountView(MethodView):
                                            email=email, phone=phone, password=password)
                 account_user = account_user.create(account_user)
                 account_user.save()
-                AccountUserRole.get_or_create(account_user.id, ['WRITER'])
-                user = {"id": account_user.id, "name": account_user.name, "email": account_user.email}
-                app.logger.debug("Successfully saved new user with the details: \n{}".format(body))
-                return jsonify({"user": user}), 201
+                AccountUserRole.get_or_create(account_user.id, ['CLIENT'])
+                app.logger.debug("Successfully saved new user")
+                return jsonify(message="Successfully saved new user"), 201
             except Exception as e:
                 app.logger.exception('Exception occurred')
                 return jsonify(message='An error occurred. {}'.format(str(e))), 400
