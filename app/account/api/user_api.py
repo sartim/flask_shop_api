@@ -40,13 +40,7 @@ class AccountView(MethodView):
             app.logger.warning('{} submitted {} phone number which does not exist'.format(logged_in_user.name, phone))
             return jsonify(message='{} does not exist'.format(phone)), 404
         users = AccountUser.get_all(int(page) if page else None)
-        results = []
-        for v in users.items:
-            del v._sa_instance_state
-            results.append(v.__dict__)
-        data = jsonify(users, results, "/account/user/")
-        return jsonify(success=False if data["count"] == 0 else True,
-                       message="No results" if data["count"] == 0 else "Successfully retrieved results", dict_ctx=data)
+        return jsonify(users)
 
     @cross_origin()
     def post(self):
