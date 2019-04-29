@@ -20,3 +20,14 @@ class AccountUserRole(db.Model):
 
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, self.user_id)
+
+    @classmethod
+    def get_or_create(cls, user_id, roles):
+        for r in roles:
+            role = AccountRole.get_by_name(r)
+            cls.create(AccountUserRole(user_id, role.id))
+
+    @classmethod
+    def create(cls, user_role):
+        db.session.add(user_role)
+        db.session.commit()
