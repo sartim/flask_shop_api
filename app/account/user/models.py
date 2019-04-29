@@ -71,6 +71,14 @@ class AccountUser(Base, SearchableMixin):
         return cls.query.filter_by(email=email).first()
 
     @classmethod
+    def get_user_by_phone(cls, phone):
+        """
+        Get user by phone
+        :return:
+        """
+        return cls.query.filter_by(phone=phone).first()
+
+    @classmethod
     def get_all(cls, page):
         users = cls.query.order_by(desc(cls.created_date)). \
             paginate(page=page, per_page=int(os.environ.get('PAGINATE_BY')), error_out=True)
