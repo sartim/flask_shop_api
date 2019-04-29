@@ -12,7 +12,3 @@ class AccountRole(Base):
 
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, self.name)
-
-    @classmethod
-    def get_by_name(cls, name):
-        return cls.query.filter_by(name=name).first()
