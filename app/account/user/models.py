@@ -1,3 +1,6 @@
+import os
+from sqlalchemy import desc
+
 from app.account.user.authenticated.models import AccountUserAuthenticated
 from app.account.user.role.models import AccountUserRole
 from app.core.mixins import SearchableMixin
@@ -66,3 +69,19 @@ class AccountUser(Base, SearchableMixin):
         :return:
         """
         return cls.query.filter_by(email=email).first()
+
+    @classmethod
+    def get_all(cls, page):
+        users = cls.query.order_by(desc(cls.created_date)). \
+            paginate(page=page, per_page=int(os.environ.get('PAGINATE_BY')), error_out=True)
+        results = []
+        for user in users.items:
+            data = cls.response(user)
+            results.append(data)
+        data = cls.response_dict(users, results, '/account/user/')
+        return data
+
+    @classmethod
+    def response(cls, user):
+        return dict(id=user.id, first_name=user.first_name, middle_name=user.middle_name, last_name=user.last_name,
+                    email=user.email, phone=user.phone, image=user.image, created_date=user.created_date)
