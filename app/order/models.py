@@ -5,6 +5,7 @@ from sqlalchemy import func, extract
 from app.core.mixins import SearchableMixin
 from app.core.models import Base
 from app import db, constants
+from app.order.status.models import OrderStatus
 from app.product.models import Product
 
 
@@ -18,6 +19,7 @@ class Order(Base, SearchableMixin):
     quantity = db.Column(db.Integer)
 
     product = db.relationship(Product, backref='oder_product', lazy=True)
+    status = db.relationship(OrderStatus, backref='oder_status', lazy=True)
 
     def __init__(self, user_id=None, product_id=None, status_id=None, quantity=None):
         self.user_id = user_id
