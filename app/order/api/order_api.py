@@ -11,10 +11,12 @@ class OrderApi(MethodView):
     @jwt_required
     def get(self):
         filter_ = request.args.get('filter_')
+        page = request.args.get('page')
         if filter_:
-            orders = Order.get_orders_by_filter(filter_)
-            return jsonify(count=orders)
-        return jsonify(message='Missing path variable'), 400
+            orders = Order.get_orders_by_filter(filter_, page)
+            return jsonify(orders)
+        orders = Order.get_all(page)
+        return jsonify(orders), 400
 
     @cross_origin()
     @jwt_required
