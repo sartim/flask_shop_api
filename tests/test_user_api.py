@@ -1,4 +1,4 @@
-from testing.base import Base
+from tests.base import Base
 
 
 class TestUserApi(Base):
