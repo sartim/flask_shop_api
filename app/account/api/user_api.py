@@ -56,7 +56,7 @@ class AccountView(MethodView):
             validated = validator.field_validator(keys, body)
             if not validated["success"]:
                 app.logger.warning('User made request with invalid fields: \n {}'.format(body))
-                return jsonify(jsonify=validated['data'])
+                return jsonify(validated['data'])
             first_name = body['first_name']
             middle_name = body['middle_name'] if 'middle_name' in body else None
             last_name = body['last_name']
