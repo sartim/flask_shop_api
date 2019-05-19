@@ -11,6 +11,10 @@ class ProductApi(MethodView):
     @jwt_required
     def get(self):
         page = request.args.get('page')
+        id = request.args.get('id')
+        if id:
+            product = Product.get_by_id(id)
+            return jsonify(product), 200
         products = Product.get_all(page)
         return jsonify(products), 200
 
