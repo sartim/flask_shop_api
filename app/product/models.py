@@ -33,6 +33,11 @@ class Product(Base, SearchableMixin):
         return "%s(%s)" % (self.__class__.__name__, self.id)
 
     @classmethod
+    def get_by_id(cls, id):
+        product = cls.query.filter_by(id=id)
+        return cls.response(product)
+
+    @classmethod
     def get_all(cls, page):
         products = cls.query.order_by(desc(cls.created_date)).\
             paginate(page=page, per_page=int(os.environ.get('PAGINATE_BY')), error_out=True)
