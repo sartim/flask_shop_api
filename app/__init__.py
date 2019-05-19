@@ -20,12 +20,15 @@ def create_app():
     if os.environ.get('DEV') == "TRUE":
         app.config.from_object(DevelopmentConfig)
         app.elasticsearch = elasticsearch
+        app.logger.debug(" * ENV: DEVELOPMENT")
     if os.environ.get('PROD') == "TRUE":
         app.config.from_object(ProductionConfig)
         app.elasticsearch = elasticsearch
+        app.logger.debug(" * ENV: PRODUCTION")
     if os.environ.get("TEST") == "TRUE":
         app.config.from_object(TestingConfig)
         app.elasticsearch = None
+        app.logger.debug(" * ENV: TESTING")
     return app
 
 
