@@ -3,9 +3,9 @@ from flask.views import MethodView
 from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
 from app import app
+from app.helpers import validator
+from app.product.category.models import ProductCategory
 from app.product.models import Product
-from helpers import validator
-from product.category.models import ProductCategory
 
 
 class ProductCategoryApi(MethodView):
