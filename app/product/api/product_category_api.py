@@ -13,7 +13,13 @@ class ProductCategoryApi(MethodView):
     @jwt_required
     def get(self):
         page = request.args.get('page')
-        categories = Product.get_all(page)
+        id = request.args.get('id')
+        if id:
+            category = ProductCategory.get_by_id(id)
+            result = category.__dict__
+            del result['_sa_instance_state']
+            return jsonify(result), 200
+        categories = ProductCategory.get_all(page)
         return jsonify(categories), 200
 
     @cross_origin()
