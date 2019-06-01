@@ -34,13 +34,24 @@ class Product(Base, SearchableMixin):
 
     @classmethod
     def get_by_id(cls, id):
-        product = cls.query.filter_by(id=id)
+        product = cls.query.filter_by(id=id).first()
         return cls.response(product)
+
+    @classmethod
+    def get_by_category(cls, category_id, page):
+        products = cls.query.filter_by(category_id=category_id).\
+            paginate(page=int(page), per_page=int(os.environ.get('PAGINATE_BY')), error_out=True)
+        results = []
+        for product in products.items:
+            data = cls.response(product)
+            results.append(data)
+        data = cls.response_dict(products, results, 'product/', category_id=category_id)
+        return data
 
     @classmethod
     def get_all(cls, page):
         products = cls.query.order_by(desc(cls.created_date)).\
-            paginate(page=page, per_page=int(os.environ.get('PAGINATE_BY')), error_out=True)
+            paginate(page=int(page), per_page=int(os.environ.get('PAGINATE_BY')), error_out=True)
         results = []
         for product in products.items:
             data = cls.response(product)
