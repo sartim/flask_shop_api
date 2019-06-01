@@ -12,8 +12,12 @@ class ProductApi(MethodView):
     def get(self):
         page = request.args.get('page')
         id = request.args.get('id')
+        category_id = request.args.get('category_id')
         if id:
             product = Product.get_by_id(id)
+            return jsonify(product), 200
+        if category_id:
+            product = Product.get_by_category(category_id, page)
             return jsonify(product), 200
         products = Product.get_all(page)
         return jsonify(products), 200
