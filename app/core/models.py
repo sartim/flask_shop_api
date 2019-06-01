@@ -71,30 +71,34 @@ class Base(db.Model):
         return db.session.rollback()
 
     @classmethod
-    def response_dict(cls, obj, results, path, id=None):
+    def response_dict(cls, obj, results, path, id=None, **kwargs):
         domain = flask.request.url_root
-        if obj.has_next:
-            data = {
-                "count": obj.total,
-                "results": results,
-                "next": "{0}{1}?id={2}&page={3}".format(domain, path, id, obj.next_num)
-                if id else "{0}{1}?page={2}".format(domain, path, obj.next_num),
-                "previous": ""
-            }
-        elif obj.has_prev:
-            data = {
-                "count": obj.total,
-                "results": results,
-                "next": "",
-                "previous": "{0}{1}?id={2}&page={3}".format(domain, path, id, obj.prev_num)
-                if id else "{0}{1}?page={2}".format(domain, path, obj.prev_num),
-            }
-        else:
-            data = {
-                "count": obj.total,
-                "results": results,
-                "next": "",
-                "previous": ""
-            }
+        if kwargs:
+            next_url = "{}{}?{}={}&page={}".format(domain, path, ' '.join(kwargs.keys()),
+                                                   kwargs[' '.join(kwargs.keys())], obj.next_num)
+        elif not id:
+            next_url = "{}{}?page={}".format(domain, path, obj.next_num)
+        elif id:
+            next_url = "{}{}?id={}&page={}".format(domain, path, id, obj.next_num)
 
+        if kwargs:
+            prev_url = "{}{}?{}={}&page={}".format(domain, path, ' '.join(kwargs.keys()),
+                                                   kwargs[' '.join(kwargs.keys())], obj.prev_num)
+        elif not id:
+            prev_url = "{0}{1}?page={2}".format(domain, path, obj.prev_num)
+        elif id:
+            prev_url = "{}{}?id={}&page={}".format(domain, path, id, obj.prev_num)
+
+        if obj.has_next:
+            if obj.prev_num and obj.prev_num <= 1:
+                    data = dict(count=obj.total, results=results, next=next_url, previous=prev_url)
+            else:
+                data = dict(count=obj.total, results=results, next=next_url, previous="")
+        elif obj.has_prev:
+            if obj.next_num:
+                data = dict(count=obj.total, results=results, next=next_url, previous=prev_url)
+            else:
+                data = dict(count=obj.total, results=results, next="")
+        else:
+            data = dict(count=obj.total, results=results, next="", previous="")
         return data
