@@ -17,9 +17,9 @@ class ProductApi(MethodView):
             product = Product.get_by_id(id)
             return jsonify(product), 200
         if category_id:
-            product = Product.get_by_category(category_id, page)
+            product = Product.get_by_category(category_id, int(page) if page else None)
             return jsonify(product), 200
-        products = Product.get_all(page)
+        products = Product.get_all(int(page) if page else None)
         return jsonify(products), 200
 
     @cross_origin()
