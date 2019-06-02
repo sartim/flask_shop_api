@@ -73,13 +73,13 @@ class Base(db.Model):
     @classmethod
     def response_dict(cls, obj, results, path, id=None, **kwargs):
         domain = flask.request.url_root
-        if kwargs:
+        if id:
+            next_url = "{}{}?id={}".format(domain, path, id)
+        elif kwargs:
             next_url = "{}{}?{}={}&page={}".format(domain, path, ' '.join(kwargs.keys()),
                                                    kwargs[' '.join(kwargs.keys())], obj.next_num)
         elif not id:
             next_url = "{}{}?page={}".format(domain, path, obj.next_num)
-        elif id:
-            next_url = "{}{}?id={}&page={}".format(domain, path, id, obj.next_num)
 
         if kwargs:
             prev_url = "{}{}?{}={}&page={}".format(domain, path, ' '.join(kwargs.keys()),
@@ -90,15 +90,7 @@ class Base(db.Model):
             prev_url = "{}{}?id={}&page={}".format(domain, path, id, obj.prev_num)
 
         if obj.has_next:
-            if obj.prev_num and obj.prev_num <= 1:
-                    data = dict(count=obj.total, results=results, next=next_url, previous=prev_url)
-            else:
-                data = dict(count=obj.total, results=results, next=next_url, previous="")
-        elif obj.has_prev:
-            if obj.next_num:
-                data = dict(count=obj.total, results=results, next=next_url, previous=prev_url)
-            else:
-                data = dict(count=obj.total, results=results, next="")
+            data = dict(count=obj.total, results=results, next=next_url, previous=prev_url if obj.prev_num else "")
         else:
             data = dict(count=obj.total, results=results, next="", previous="")
         return data
