@@ -22,7 +22,6 @@ class Base(db.Model):
     @staticmethod
     def create(obj):
         db.session.add(obj)
-        obj.save()
         return obj
 
     @classmethod
