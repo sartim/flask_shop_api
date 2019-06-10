@@ -42,6 +42,7 @@ class ProductCategoryApi(MethodView):
             category = ProductCategory(name=name)
             try:
                 category.create(category)
+                category.save()
                 app.logger.debug(Message)
                 return jsonify(message=Message.SUCCESS), 201
             except Exception as e:
