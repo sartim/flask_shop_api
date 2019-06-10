@@ -36,19 +36,19 @@ class ProductCategoryApi(MethodView):
             body = request.get_json()
             validated = validator.field_validator(keys, body)
             if not validated["success"]:
-                app.logger.warning('Field validation error: \n {}'.format(body))
+                app.logger.warning('{}: \n {}'.format(Message.VALIDATION_ERROR, body))
                 return jsonify(validated['data'])
             name = body['name']
             category = ProductCategory(name=name)
             try:
                 category.create(category)
                 app.logger.debug(Message)
-                return jsonify(), 201
+                return jsonify(message=Message.SUCCESS), 201
             except Exception as e:
-                app.exception("Error occurred. {}".format(str(e)))
+                app.exception("{}. {}".format(Message.ERROR, str(e)))
                 return jsonify(message="Could not save record!"), 400
         else:
-            app.logger.warning('Content type header IS not application/json')
+            app.logger.warning('Content type header is not application/json')
             return jsonify(message='Content-type header is not application/json'), 400
 
     @cross_origin()
