@@ -16,6 +16,9 @@ class Base:
     @classmethod
     def setup_class(cls):
         cls.client = app.test_client()
+        cls.root_api_url = '/'
+        cls.generate_jwt_api_url = '/account/generate/jwt/'
+        cls.user_api_url = '/account/user/'
         with app.app_context():
             Migrate(app, db)
             upgrade()
