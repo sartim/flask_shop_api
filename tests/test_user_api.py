@@ -3,6 +3,7 @@ from tests.base import Base
 
 class TestUserApi(Base):
     url = '/account/user/'
+
     def test_get(self):
         r = self.client.get(self.url, headers=self.headers)
         assert r.status_code == 200

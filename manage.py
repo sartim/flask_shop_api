@@ -185,7 +185,6 @@ def populate_order_data():
     pass
 
 
-
 if __name__ == '__main__':
     formatter = logging.Formatter(
         "[%(asctime)s] %(levelname)s in %(module)s.%(funcName)s(): %(message)s - {%(pathname)s:%(lineno)d}")
