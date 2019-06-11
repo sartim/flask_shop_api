@@ -19,9 +19,10 @@ class Base:
     def setup_class(cls):
         assert os.environ.get("TEST") == "TRUE"
         cls.client = app.test_client()
-        cls.root_api_url = '/'
-        cls.generate_jwt_api_url = '/account/generate/jwt/'
-        cls.user_api_url = '/account/user/'
+        cls.root_url = '/'
+        cls.generate_jwt_url = '/account/generate/jwt/'
+        cls.user_url = '/account/user/'
+        cls.product_category_url = '/product/category/'
         with app.app_context():
             Migrate(app, db)
             upgrade()
