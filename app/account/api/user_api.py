@@ -6,7 +6,7 @@ from app import app
 from app.account.user.models import AccountUser
 from app.account.user.role.models import AccountUserRole
 from app.helpers import validator, utils
-from constants import Message
+from app.constants import Message
 
 
 class AccountView(MethodView):
