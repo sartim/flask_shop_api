@@ -17,6 +17,7 @@ class BaseConfig(object):
     CSRF_ENABLED = True
     CSRF_SESSION_KEY = os.environ.get('CSRF_SESSION_KEY')
     SECRET_KEY = os.environ.get('SECRET_KEY')
+    DATA_COUNT_LIMIT = 2000
 
 
 class DevelopmentConfig(BaseConfig):
@@ -43,4 +44,5 @@ class TestingConfig(BaseConfig):
     BCRYPT_LOG_ROUNDS = 4
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BaseConfig.BASE_DIR, 'test.sqlite')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    DATA_COUNT_LIMIT = 5
 
