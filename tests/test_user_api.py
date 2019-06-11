@@ -1,4 +1,5 @@
 from tests.base import Base
+from constants import Message
 
 
 class TestUserApi(Base):
@@ -17,3 +18,9 @@ class TestUserApi(Base):
                                          password='test'))
         assert req.status_code == 201
         assert req.json['message'] == 'Successfully saved new user'
+
+    def test_put(self):
+        req = self.client.put(self.user_api_url, headers=self.headers,
+                              json=dict(id=1, last_name='User2'))
+        assert req.status_code == 201
+        assert req.json['message'] == Message.SUCCESS
