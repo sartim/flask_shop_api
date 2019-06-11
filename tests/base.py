@@ -1,3 +1,5 @@
+import os
+
 from flask_migrate import Migrate, upgrade
 from app import app, db
 from app.account.role.models import AccountRole
@@ -9,12 +11,13 @@ from app.order.models import Order
 from app.order.status.models import OrderStatus
 from app.helpers import utils
 from app.api_imports import *
-from manage import add_roles, add_demo_users
+from manage import add_roles, add_demo_users, add_product_data
 
 
 class Base:
     @classmethod
     def setup_class(cls):
+        assert os.environ.get("TEST") == "TRUE"
         cls.client = app.test_client()
         cls.root_api_url = '/'
         cls.generate_jwt_api_url = '/account/generate/jwt/'
@@ -26,6 +29,7 @@ class Base:
             # Add pre-loaded data
             add_roles()
             add_demo_users()
+            add_product_data()
             # Generate token for authentication header
             r = cls.client.post('/account/generate/jwt/', json=dict(email='demo@mail.com', password='qwertytrewq'))
             cls.headers = {'Authorization': 'Bearer {}'.format(r.json['access_token'])}
