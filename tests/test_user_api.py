@@ -24,3 +24,9 @@ class TestUserApi(Base):
                               json=dict(id=1, last_name='User2'))
         assert req.status_code == 201
         assert req.json['message'] == Message.SUCCESS
+
+    def test_delete(self):
+        req = self.client.delete(self.user_api_url, headers=self.headers,
+                                 json=dict(id=1))
+        assert req.status_code == 200
+        assert req.json['message'] == Message.SUCCESS
