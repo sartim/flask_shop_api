@@ -175,10 +175,8 @@ class AccountView(MethodView):
             body = request.get_json()
             validated = validator.field_validator(keys, body)
             if not validated["success"]:
-                app.logger.warning(
-                    '{logged_in_user} made request with invalid fields: \n {request_body}'
-                        .format(logged_in_user=logged_in_user.name, request_body=body)
-                )
+                app.logger.warning('{logged_in_user} made request with invalid fields: \n {request_body}'
+                                   .format(logged_in_user=logged_in_user.name, request_body=body))
                 return jsonify(validated['data']), 400
             user = AccountUser.get_by_id(body['id'])
             if user:
@@ -186,7 +184,7 @@ class AccountView(MethodView):
                     user.delete()
                     user.save()
                     app.logger.debug("Successfully deleted user with id {}".format(body['id']))
-                    return jsonify(message="{} successfully deleted user".format(logged_in_user.name)), 200
+                    return jsonify(message=Message.SUCCESS), 200
                 except Exception as e:
                     app.logger.exception('Exception occurred. Made by {}'.format(logged_in_user.name))
                     return jsonify(message='An error occurred. {}'.format(str(e))), 400
