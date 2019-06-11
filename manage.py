@@ -41,7 +41,9 @@ def runserver():
 
 def add_roles():
     objects = [
-        AccountRole(name='SUPERUSER'), AccountRole(name='ADMIN'), AccountRole(name='STAFF'),
+        AccountRole(name='SUPERUSER'),
+        AccountRole(name='ADMIN'),
+        AccountRole(name='STAFF'),
         AccountRole(name='CLIENT')
     ]
     db.session.bulk_save_objects(objects)
@@ -49,15 +51,19 @@ def add_roles():
 
 
 def add_demo_users():
-    user = AccountUser(first_name="Demo", last_name="User", email="demo@mail.com",
-                       password=utils.generate_password_hash("qwertytrewq"), is_active=True)
+    user = AccountUser(first_name="Demo", last_name="User",
+                       email="demo@mail.com", phone="254712345678",
+                       password=utils.generate_password_hash("qwertytrewq"),
+                       is_active=True)
     db.session.add(user)
     db.session.commit()
     user_role = AccountUserRole(user_id=user.id, role_id=3)
     db.session.add(user_role)
     db.session.commit()
-    user = AccountUser(first_name="Demo2", last_name="User", email="demo2@mail.com",
-                       password=utils.generate_password_hash("qwertytrewq"), is_active=True)
+    user = AccountUser(first_name="Demo2", last_name="User",
+                       email="demo2@mail.com", phone="254787654321",
+                       password=utils.generate_password_hash("qwertytrewq"),
+                       is_active=True)
     db.session.add(user)
     db.session.commit()
     user_role = AccountUserRole(user_id=user.id, role_id=3)
@@ -66,7 +72,8 @@ def add_demo_users():
 
 
 def add_order_statuses():
-    objects = [OrderStatus(name='DRAFT'), OrderStatus(name='PENDING'), OrderStatus('COMPLETE') ]
+    objects = [OrderStatus(name='DRAFT'), OrderStatus(name='PENDING'),
+               OrderStatus('COMPLETE')]
     db.session.bulk_save_objects(objects)
     db.session.commit()
 
@@ -132,7 +139,8 @@ def createsuperuser():
     if validate_email and not validate_pwd:
         try:
             password = utils.generate_password_hash(password)
-            user = AccountUser(first_name=first_name, last_name=last_name, email=email, password=password,
+            user = AccountUser(first_name=first_name, last_name=last_name,
+                               email=email, password=password,
                                is_active=True)
             db.session.add(user)
             db.session.commit()
@@ -176,7 +184,7 @@ def populate_product_data():
             category = ProductCategory.get_or_create_by_name(category)
             product.category_id = category.id
             product.items = items
-            count+=1
+            count += 1
             if count == 2000:
                 break
 
@@ -187,7 +195,8 @@ def populate_order_data():
 
 if __name__ == '__main__':
     formatter = logging.Formatter(
-        "[%(asctime)s] %(levelname)s in %(module)s.%(funcName)s(): %(message)s - {%(pathname)s:%(lineno)d}")
+        "[%(asctime)s] %(levelname)s in %(module)s.%(funcName)s(): "
+        "%(message)s - {%(pathname)s:%(lineno)d}")
     handler = logging.StreamHandler(sys.stdout)
     log_level = os.environ.get('LOG_LEVEL')
     if log_level.lower() == 'debug':
