@@ -1,5 +1,5 @@
 from tests.base import Base
-from constants import Message
+from app.constants import Message
 
 
 class TestUserApi(Base):
