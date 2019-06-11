@@ -78,6 +78,35 @@ def add_order_statuses():
     db.session.commit()
 
 
+def add_client_data():
+    pass
+
+
+def add_product_data():
+    with open('datafinitielectronicsproductspricingdata.csv') as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        next(csv_reader)
+        count = 0
+        for row in csv_reader:
+            price = row[1]
+            brand = row[12]
+            image_urls = row[17]
+            name = row[21]
+            category = row[22]
+            items = random.randint(5, 50)
+
+            product = Product.get_or_create_by_name(name)
+            product.price = price
+            product.brand = brand
+            product.image_urls = image_urls
+            category = ProductCategory.get_or_create_by_name(category)
+            product.category_id = category.id
+            product.items = items
+            count += 1
+            if count == app.config.get('DATA_COUNT_LIMIT'):
+                break
+
+
 @manager.command
 def create(default_data=True, sample_data=False):
     """
@@ -89,6 +118,7 @@ def create(default_data=True, sample_data=False):
     add_roles()
     add_demo_users()
     add_order_statuses()
+    add_product_data()
     sys.stdout.write("Finished creating tables!!! \n")
 
 
@@ -153,40 +183,10 @@ def createsuperuser():
 
 
 @manager.command
-def populate_client_data():
-    pass
+def create_product_data():
+    add_product_data()
+    print("Finished seeding product data")
 
-
-@manager.command
-def populate_product_data():
-    """"
-    ['id', 'prices_amountmax', 'prices_amountmin', 'prices_availability', 'prices_condition',
-    'prices_currency', 'prices_dateseen', 'prices_issale', 'prices_merchant', 'prices_shipping',
-    'prices_sourceurls', 'asins', 'brand', 'categories', 'dateadded', 'dateupdated', 'ean', 'imageurls',
-    'keys', 'manufacturer', 'manufacturernumber', 'name', 'primarycategories', 'sourceurls', 'upc', 'weight']
-    """
-    with open('datafinitielectronicsproductspricingdata.csv') as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=',')
-        next(csv_reader)
-        count = 0
-        for row in csv_reader:
-            price = row[1]
-            brand = row[12]
-            image_urls = row[17]
-            name = row[21]
-            category = row[22]
-            items = random.randint(5, 50)
-
-            product = Product.get_or_create_by_name(name)
-            product.price = price
-            product.brand = brand
-            product.image_urls = image_urls
-            category = ProductCategory.get_or_create_by_name(category)
-            product.category_id = category.id
-            product.items = items
-            count += 1
-            if count == 2000:
-                break
 
 @manager.command
 def populate_order_data():
