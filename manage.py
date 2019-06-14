@@ -86,7 +86,6 @@ def add_product_data():
     with open('electronic_products_data.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         next(csv_reader)
-        count = 0
         for row in csv_reader:
             price = row[1]
             brand = row[12]
@@ -94,7 +93,6 @@ def add_product_data():
             name = row[21]
             category = row[22]
             items = random.randint(5, 50)
-
             product = Product.get_or_create_by_name(name)
             product.price = price
             product.brand = brand
@@ -102,9 +100,8 @@ def add_product_data():
             category = ProductCategory.get_or_create_by_name(category)
             product.category_id = category.id
             product.items = items
-            count += 1
-            if count == app.config.get('DATA_COUNT_LIMIT'):
-                break
+            product.save()
+            sys.stdout.write("Successfully finished adding data ")
 
 
 @manager.command
