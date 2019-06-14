@@ -83,7 +83,7 @@ def add_client_data():
 
 
 def add_product_data():
-    with open('datafinitielectronicsproductspricingdata.csv') as csv_file:
+    with open('electronic_products_data.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         next(csv_reader)
         count = 0
