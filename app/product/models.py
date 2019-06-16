@@ -1,10 +1,12 @@
 import os
 
 from sqlalchemy import desc
+from sqlalchemy_utils import aggregated
 from app.core.mixins import SearchableMixin
 from app.core.models import Base
 from app import db
 from app.product.category.models import ProductCategory
+from app.product.review.models import Review
 
 
 class Product(Base, SearchableMixin):
@@ -20,6 +22,7 @@ class Product(Base, SearchableMixin):
     category_id = db.Column(db.Integer, db.ForeignKey('product_categories.id'))
 
     category = db.relationship(ProductCategory, backref='account_role', lazy=True)
+    reviews = db.relationship(Review)
 
     def __init__(self, name=None, brand=None, items=None, image_urls=None, price=None, category_id=None):
         self.name = name
@@ -31,6 +34,10 @@ class Product(Base, SearchableMixin):
 
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, self.id)
+
+    @aggregated('reviews', db.Column(db.Numeric))
+    def avg_rating(self):
+        return db.func.avg(Review.rating)
 
     @classmethod
     def get_by_id(cls, id):
