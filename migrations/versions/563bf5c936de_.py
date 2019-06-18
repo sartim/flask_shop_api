@@ -28,7 +28,8 @@ def upgrade():
     sa.PrimaryKeyConstraint('order_id', 'product_id')
     )
     op.add_column('orders', sa.Column('order_total', sa.DECIMAL(precision=10, scale=2), nullable=True))
-    op.drop_column('orders', 'quantity')
+    with op.batch_alter_table('orders') as batch_op:
+        batch_op.drop_column('quantity')
     # ### end Alembic commands ###
 
 
