@@ -14,6 +14,7 @@ from app.account.user.role.models import AccountUserRole
 from app.product.models import Product
 from app.product.category.models import ProductCategory
 from app.order.models import Order
+from app.order.item.models import OrderItem
 from app.order.status.models import OrderStatus
 from app.helpers import validator, utils
 from app.helpers.socket_utils import *
