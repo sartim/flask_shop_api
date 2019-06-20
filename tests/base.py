@@ -33,10 +33,9 @@ class Base:
             add_demo_users()
             add_product_data()
             # Generate token for authentication header
-            r = cls.client.post('/account/generate/jwt/', json=dict(email='demo@mail.com', password='qwertytrewq'))
-            cls.headers = {'Authorization': 'Bearer {}'.format(r.json['access_token'])}
+            req = cls.client.post('/account/generate/jwt/', json=dict(email='demo@mail.com', password='qwertytrewq'))
+            cls.headers = {'Authorization': 'Bearer {}'.format(req.json['access_token'])}
 
     @classmethod
     def teardown_class(cls):
         db.drop_all()
-        db.engine.execute("DROP TABLE alembic_version")
