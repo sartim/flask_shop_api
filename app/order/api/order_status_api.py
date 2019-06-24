@@ -3,6 +3,8 @@ from flask.views import MethodView
 from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
 from app import app
+from app.constants import Message
+from app.helpers import validator
 from order.status.models import OrderStatus
 
 
@@ -23,7 +25,32 @@ class OrderStatusApi(MethodView):
     @cross_origin()
     @jwt_required
     def post(self):
-        pass
+        body = request.data
+        keys = ['name']
+        if not body:
+            validated = validator.field_validator(keys, {})
+            if not validated["success"]:
+                app.logger.warning('{}: \n {}'.format(Message.VALIDATION_ERROR, body))
+                return jsonify(validated['data']), 400
+        if request.is_json:
+            body = request.get_json()
+            validated = validator.field_validator(keys, body)
+            if not validated["success"]:
+                app.logger.warning('{}: \n {}'.format(Message.VALIDATION_ERROR, body))
+                return jsonify(validated['data'])
+            name = body['name']
+            status = OrderStatus(name=name)
+            try:
+                status.create(status)
+                status.save()
+                app.logger.debug(Message.SUCCESS)
+                return jsonify(message=Message.SUCCESS), 201
+            except Exception as e:
+                app.exception("{}. {}".format(Message.ERROR, str(e)))
+                return jsonify(message="Could not save record!"), 400
+        else:
+            app.logger.warning('Content type header is not application/json')
+            return jsonify(message='Content-type header is not application/json'), 400
 
     @cross_origin()
     @jwt_required
