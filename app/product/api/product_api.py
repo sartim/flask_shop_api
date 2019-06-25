@@ -4,6 +4,8 @@ from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
 from app import app
 from app.product.models import Product
+from constants import Message
+from helpers import validator
 
 
 class ProductApi(MethodView):
@@ -35,7 +37,31 @@ class ProductApi(MethodView):
     @cross_origin()
     @jwt_required
     def delete(self):
-        return jsonify(), 200
+        body = request.data
+        keys = ['id']
+        if not body:
+            validated = validator.field_validator(keys, {})
+            if not validated["success"]:
+                app.logger.warning('{}: \n {}'.format(Message.VALIDATION_ERROR, body))
+                return jsonify(validated['data']), 400
+        if request.is_json:
+            body = request.get_json()
+            validated = validator.field_validator(keys, body)
+            if not validated["success"]:
+                app.logger.warning('{}: \n {}'.format(Message.VALIDATION_ERROR, body))
+                return jsonify(validated['data'])
+            id = body['id']
+            product = Product.get_by_id(id)
+            try:
+                product.delete()
+                app.logger.debug(Message.SUCCESS)
+                return jsonify(message=Message.SUCCESS), 200
+            except Exception as e:
+                app.exception("{}. {}".format(Message.ERROR, str(e)))
+                return jsonify(message="Could not save record!"), 400
+        else:
+            app.logger.warning('Content type header is not application/json')
+            return jsonify(message='Content-type header is not application/json'), 400
 
 
 app.add_url_rule('/product/', view_func=ProductApi.as_view('products'), methods=['GET', 'POST', 'PUT','DELETE'])
