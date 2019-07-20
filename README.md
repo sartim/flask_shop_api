@@ -61,7 +61,7 @@ When using sqlite for test
     
 **Running app using manage.py**
 
-    $ python manage.py run server
+    $ python manage.py run
 
 **Running app using gunicorn**
 
