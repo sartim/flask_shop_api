@@ -3,10 +3,11 @@ import sys
 import csv
 import os
 import random
+import click
 
-from click import prompt
-from flask_migrate import MigrateCommand, Migrate
-from flask_script import Manager, prompt_bool, Shell, prompt_pass
+from flask import current_app
+from flask.cli import FlaskGroup
+
 from app import db
 from app.account.role.models import AccountRole
 from app.account.user.models import AccountUser
@@ -25,19 +26,31 @@ from app.product.category.models import ProductCategory
 from app.product.models import Product
 
 
+@app.shell_context_processor
 def _make_context():
     return dict(app=app, db=db, models=models)
 
 
-manager = Manager(app)
-migrate = Migrate(app, db)
-manager.add_command('db', MigrateCommand)
-manager.add_command("shell", Shell(make_context=_make_context))
+@click.group(cls=FlaskGroup, create_app=app)
+def main():
+    """This is a management script for the application."""
 
 
-@manager.command
+@main.command('run', short_help='Run development server.')
 def runserver():
-    socketio.run(app, host='0.0.0.0', port=5000)
+    socketio.run(app)
+
+
+@main.command('shell', short_help='Run a shell in the app context.')
+def shell_command():
+    ctx = current_app.make_shell_context()
+    try:
+        from IPython import start_ipython
+        start_ipython(argv=(), user_ns=ctx)
+    except ImportError:
+        print(ImportError)
+        from code import interact
+        interact(local=ctx)
 
 
 def add_roles():
@@ -102,11 +115,11 @@ def add_product_data():
             product.category_id = category.id
             product.items = items
             product.save()
-            sys.stdout.write("Successfully finished adding data ")
+            click.echo("Successfully finished adding data ")
 
 
-@manager.command
-def create(default_data=True, sample_data=False):
+@main.command('create', short_help='Creates database tables from sqlalchemy models.')
+def create():
     """
     Creates database tables from sqlalchemy models
     :param default_data:
@@ -117,21 +130,18 @@ def create(default_data=True, sample_data=False):
     add_demo_users()
     add_order_statuses()
     add_product_data()
-    sys.stdout.write("Finished creating tables!!! \n")
+    click.echo("Finished creating tables!!! \n")
 
 
-# DO NOT ever run this on production server
-@manager.command
+@main.command('drop', short_help='Drops database tables.')
 def drop():
     """Drops database tables"""""
-    if prompt_bool("Are you sure you want to drop all tables?"):
+    if click.confirm('Are you sure you want to drop all tables?'):
         db.drop_all()
-        sys.stdout.write("Finished dropping tables!!! \n")
+        click.echo('Finished dropping tables!!!')
 
 
-# DO NOT ever run this on production server
-# Also never run it twice
-@manager.command
+@main.command('recreate', short_help='Recreates database tables.')
 def recreate(default_data=True, sample_data=False):
     """
     Recreates database tables (same as issuing 'drop' and then 'create')
@@ -142,27 +152,27 @@ def recreate(default_data=True, sample_data=False):
     create(default_data, sample_data)
 
 
-@manager.command
-def createsuperuser():
+@main.command('createsuperuser', short_help='Creates the superuser.')
+def create_superuser():
     """Creates the superuser"""
 
-    first_name = prompt("First Name")
-    last_name = prompt("Last Name")
-    email = prompt("Email")
+    first_name = click.prompt("First Name")
+    last_name = click.prompt("Last Name")
+    email = click.prompt("Email")
     validate_email = validator.email_validator(email)
-    password = prompt_pass("Password")
-    confirm_password = prompt_pass("Confirm Password")
+    password = click.prompt("Password", type=str)
+    confirm_password = click.prompt("Confirm Password", type=str)
     validate_pwd = validator.password_validator(password)
 
     if not validate_email:
-        sys.stdout.write("Not a valid email \n")
+        click.echo("Not a valid email \n")
 
     if validate_pwd:
-        sys.stdout.write("Not a valid password \n")
+        click.echo("Not a valid password \n")
 
     if not validate_pwd:
         if not validate_pwd == confirm_password:
-            sys.stdout.write("Passwords do not match \n")
+            click.echo("Passwords do not match \n")
 
     if validate_email and not validate_pwd:
         try:
@@ -175,21 +185,22 @@ def createsuperuser():
             user_role = AccountUserRole(user_id=user.id, role_id=1)
             db.session.add(user_role)
             db.session.commit()
-            sys.stdout.write("Successfully created admin account \n")
+            click.echo("Successfully created admin account \n")
         except Exception as e:
-            sys.stdout.write(str(e))
+            click.echo(str(e))
 
 
-@manager.command
+@main.command('createproducts', short_help='Creates products seeding data.')
 def create_product_data():
     add_product_data()
     print("Finished seeding product data")
 
 
-@manager.command
-def populate_order_data():
+@main.command('createorders', short_help='Creates orders seeding data.')
+def create_order_data():
     pass
 
+cli = click.CommandCollection(sources=[main])
 
 if __name__ == '__main__':
     formatter = logging.Formatter(
@@ -207,6 +218,4 @@ if __name__ == '__main__':
         handler.setLevel(logging.ERROR)
     handler.setFormatter(formatter)
     app.logger.addHandler(handler)
-
-    app.logger.info('Application Starting...')
-    manager.run()
+    cli()
