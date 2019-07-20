@@ -8,7 +8,6 @@ Flask-Cors==3.0.6
 Flask-JWT-Extended==3.13.0
 Flask-Mail==0.9.1
 Flask-Migrate==2.2.1
-Flask-Script==2.0.6
 Flask-SocketIO==3.0.2
 gunicorn==19.9.0
 nose2==0.7.4
