@@ -4,13 +4,8 @@ from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
 from app import app
 from app.order.models import Order
-<<<<<<< HEAD
 from app.core.constants import Message
 from app.core.helpers import validator
-=======
-from app.constants import Message
-from app.helpers import validator
->>>>>>> a9a6e8a3f2ffd3f157c3fc0a42f29a53ec25b64f
 
 
 class OrderApi(MethodView):
