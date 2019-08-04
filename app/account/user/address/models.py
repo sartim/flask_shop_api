@@ -1,3 +1,5 @@
+from sqlalchemy_utils import CountryType
+
 from app import db
 
 
@@ -6,7 +8,7 @@ class AccountAddress(db.Model):
     __tablename__ = 'account_user_roles'
 
     user_id = db.Column(db.Integer, db.ForeignKey('account_users.id'), primary_key=True)
-    country = db.Column(db.String(255))
+    country = db.Column(CountryType)
     city_or_state = db.Column(db.String(255))
     address = db.Column(db.String(255))
     created_date = db.Column(db.DateTime, default=db.func.current_timestamp())
