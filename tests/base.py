@@ -10,7 +10,7 @@ from app.product.category.models import ProductCategory
 from app.order.models import Order
 from app.order.item.models import OrderItem
 from app.order.status.models import OrderStatus
-from app.helpers import utils
+from app.core.helpers import utils
 from app.api_imports import *
 from manage import add_roles, add_demo_users, add_product_data
 
