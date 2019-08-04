@@ -1,7 +1,7 @@
 from flask import jsonify
 from flask.views import MethodView
 from app import app
-from app.helpers import data_generator
+from app.core.helpers import data_generator
 
 
 class DailyOrderCount(MethodView):
