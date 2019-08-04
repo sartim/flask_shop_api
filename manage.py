@@ -7,15 +7,9 @@ import click
 
 from flask import current_app
 from flask.cli import FlaskGroup
-
-<<<<<<< HEAD
-from click import prompt
-from flask_migrate import MigrateCommand, Migrate
-from flask_script import Manager, prompt_bool, Shell, prompt_pass
 from app import db, app, socketio
-=======
-from app import db
->>>>>>> a9a6e8a3f2ffd3f157c3fc0a42f29a53ec25b64f
+from app.core.helpers.socket_utils import *
+from app.core.helpers.jwt_handlers import *
 from app.account.role.models import AccountRole
 from app.account.user.models import AccountUser
 from app.account.user.role.models import AccountUserRole
@@ -24,6 +18,9 @@ from app.core.helpers import utils, validator
 from app.core import models
 from app.product.category.models import ProductCategory
 from app.product.models import Product
+from app.order.models import Order
+from app.order.item.models import OrderItem
+from app.api_imports import *
 
 
 @app.shell_context_processor
@@ -199,6 +196,7 @@ def create_product_data():
 @main.command('createorders', short_help='Creates orders seeding data.')
 def create_order_data():
     pass
+
 
 cli = click.CommandCollection(sources=[main])
 
