@@ -61,7 +61,7 @@ When using sqlite for test
     
 **Running app using manage.py**
 
-    $ python manage.py run server
+    $ python manage.py run
 
 **Running app using gunicorn**
 
@@ -76,4 +76,9 @@ When using sqlite for test
 First setup the .env for test environment then run the following command from project root:
     
     $ pytest
-    
+
+**Other Commands on** 
+
+    python manage.py --help
+
+_(Optional)Install Ipython to get interactive shell using Ipython for the app_    
