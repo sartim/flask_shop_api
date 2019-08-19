@@ -32,3 +32,7 @@ def list_countries():
     :return countries:
     """
     return [{"country_id": country.numeric, 'country': country.name} for country in list(pycountry.countries)]
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg'}
