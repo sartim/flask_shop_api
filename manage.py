@@ -9,14 +9,18 @@ from flask import current_app
 from flask.cli import FlaskGroup
 
 from app import app, db, socketio
+from app.core.helpers.socket_utils import *
+from app.core.helpers.jwt_handlers import *
 from app.account.role.models import AccountRole
 from app.account.user.models import AccountUser
 from app.account.user.role.models import AccountUserRole
 from app.order.status.models import OrderStatus
-from app.core.helpers import utils
-from app.core.helpers import validator
-from app.core import models
 from app.product.models import Product, ProductCategory
+from app.core.helpers import utils, validator
+from app.core import models
+from app.order.models import Order
+from app.order.item.models import OrderItem
+from app.api_imports import *
 from app.product import urls as product_urls
 
 @app.shell_context_processor
@@ -192,6 +196,7 @@ def create_product_data():
 @main.command('createorders', short_help='Creates orders seeding data.')
 def create_order_data():
     pass
+
 
 cli = click.CommandCollection(sources=[main])
 

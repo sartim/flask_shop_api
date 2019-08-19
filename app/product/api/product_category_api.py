@@ -4,24 +4,24 @@ from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
 
 from app import app
-from app.order.status.models import OrderStatus
 from app.core.constants import Message
 from app.core.helpers import validator
+from app.product.models import ProductCategory
 
 
-class OrderStatusApi(MethodView):
+class ProductCategoryApi(MethodView):
     @cross_origin()
     @jwt_required
     def get(self):
         page = request.args.get('page')
         id = request.args.get('id')
         if id:
-            status = OrderStatus.get_by_id(id)
-            result = status.__dict__
+            category = ProductCategory.get_by_id(id)
+            result = category.__dict__
             del result['_sa_instance_state']
             return jsonify(result), 200
-        statuses = OrderStatus.get_all(page)
-        return jsonify(statuses), 200
+        categories = ProductCategory.get_all(page)
+        return jsonify(categories), 200
 
     @cross_origin()
     @jwt_required
@@ -40,10 +40,10 @@ class OrderStatusApi(MethodView):
                 app.logger.warning('{}: \n {}'.format(Message.VALIDATION_ERROR, body))
                 return jsonify(validated['data'])
             name = body['name']
-            status = OrderStatus(name=name)
+            category = ProductCategory(name=name)
             try:
-                status.create(status)
-                status.save()
+                category.create(category)
+                category.save()
                 app.logger.debug(Message.SUCCESS)
                 return jsonify(message=Message.SUCCESS), 201
             except Exception as e:
@@ -70,10 +70,10 @@ class OrderStatusApi(MethodView):
                 app.logger.warning('{}: \n {}'.format(Message.VALIDATION_ERROR, body))
                 return jsonify(validated['data'])
             id = body['id']
-            status = OrderStatus.get_by_id(id)
+            category = ProductCategory.get_by_id(id)
             try:
-                status.name = body['name']
-                status.save()
+                category.name = body['name']
+                category.save()
                 app.logger.debug(Message.SUCCESS)
                 return jsonify(message=Message.SUCCESS), 200
             except Exception as e:
@@ -100,9 +100,9 @@ class OrderStatusApi(MethodView):
                 app.logger.warning('{}: \n {}'.format(Message.VALIDATION_ERROR, body))
                 return jsonify(validated['data'])
             id = body['id']
-            status = OrderStatus.get_by_id(id)
+            category = ProductCategory.get_by_id(id)
             try:
-                status.delete()
+                category.delete()
                 app.logger.debug(Message.SUCCESS)
                 return jsonify(message=Message.SUCCESS), 200
             except Exception as e:
@@ -113,5 +113,5 @@ class OrderStatusApi(MethodView):
             return jsonify(message='Content-type header is not application/json'), 400
 
 
-app.add_url_rule('/order/status/', view_func=OrderStatusApi.as_view('order-statuses'),
-                 methods=['GET', 'POST', 'PUT', 'DELETE'])
+app.add_url_rule('/product/category/', view_func=ProductCategoryApi.as_view('product-categories'),
+                 methods=['GET', 'POST', 'PUT','DELETE'])

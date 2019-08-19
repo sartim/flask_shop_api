@@ -3,13 +3,14 @@ import os
 from datetime import date, timedelta, datetime
 from sqlalchemy import func, extract
 from app.core.mixins import SearchableMixin
-from app.core.models import Base
-from app import db, constants
+from app.core.models import BaseModel
+from app import db
+from app.core import constants
 from app.order.status.models import OrderStatus
 from app.product.models import Product
 
 
-class Order(Base, SearchableMixin):
+class Order(BaseModel, SearchableMixin):
     __tablename__ = 'orders'
     __searchable__ = ['id']
 

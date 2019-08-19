@@ -73,6 +73,3 @@ mail_handler.setFormatter(logging.Formatter('''
 # log to email when app is not in debug mode
 if not app.debug:
     app.logger.addHandler(mail_handler)
-
-if __name__ == "__main__":
-    socketio.run(app)

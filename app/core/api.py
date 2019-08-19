@@ -1,10 +1,11 @@
 import os
-from flask import jsonify
-from flask.views import MethodView
+
 from werkzeug.utils import secure_filename
 
 from app import app
 from app.core.helpers.utils import allowed_file
+from flask import jsonify
+from flask.views import MethodView
 
 
 class BaseResource(MethodView):
