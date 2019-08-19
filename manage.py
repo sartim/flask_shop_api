@@ -8,23 +8,16 @@ import click
 from flask import current_app
 from flask.cli import FlaskGroup
 
-from app import db
+from app import app, db, socketio
 from app.account.role.models import AccountRole
 from app.account.user.models import AccountUser
 from app.account.user.role.models import AccountUserRole
-from app.product.models import Product
-from app.product.category.models import ProductCategory
-from app.order.models import Order
-from app.order.item.models import OrderItem
 from app.order.status.models import OrderStatus
-from app.helpers import validator, utils
-from app.helpers.socket_utils import *
+from app.core.helpers import utils
+from app.core.helpers import validator
 from app.core import models
-from app.helpers.jwt_handlers import *
-from app.api_imports import *
-from app.product.category.models import ProductCategory
-from app.product.models import Product
-
+from app.product.models import Product, ProductCategory
+from app.product import urls as product_urls
 
 @app.shell_context_processor
 def _make_context():

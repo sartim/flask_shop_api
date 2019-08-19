@@ -4,7 +4,7 @@ from flask_cors import cross_origin
 from flask_jwt_extended import create_access_token, create_refresh_token
 from app import app
 from app.account.user.models import AccountUser
-from app.helpers import utils
+from app.core.helpers import utils
 
 
 class GenerateJwt(MethodView):

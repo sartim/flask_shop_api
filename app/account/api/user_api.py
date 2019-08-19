@@ -5,7 +5,8 @@ from flask_jwt_extended import jwt_required
 from app import app
 from app.account.user.models import AccountUser
 from app.account.user.role.models import AccountUserRole
-from app.helpers import validator, utils
+from app.core.helpers import utils
+from app.core.helpers import validator
 from app.constants import Message
 
 

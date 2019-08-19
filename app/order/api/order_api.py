@@ -5,7 +5,7 @@ from flask_jwt_extended import jwt_required
 from app import app
 from app.order.models import Order
 from app.constants import Message
-from app.helpers import validator
+from app.core.helpers import validator
 
 
 class OrderApi(MethodView):
