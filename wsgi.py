@@ -3,9 +3,11 @@ import os
 import sys
 
 from app import app, socketio
-from app.api_imports import *
 from app.core.helpers.jwt_handlers import *
-from app.api_imports import *
+from app.user import urls
+from app.role import urls
+from app.order import urls
+from app.status import urls
 
 if __name__ == "__main__":
     formatter = logging.Formatter(

@@ -4,8 +4,7 @@ import flask
 from flask_jwt_extended import current_user
 from flask_socketio import emit, join_room, leave_room, send
 from app import app, socketio, db
-from app.account.user.authenticated.models import AccountUserAuthenticated
-from app.account.user.models import AccountUser
+from app.user.models import UserAuthenticated, User
 
 
 def authenticated_only(f):
@@ -21,24 +20,24 @@ def authenticated_only(f):
 @socketio.on('my event')
 @authenticated_only
 def handle_my_custom_event(data):
-    user = AccountUser.get_current_user()
+    user = User.get_current_user()
     emit('my response', {'message': '{0} has joined'.format(user.name)}, broadcast=True)
 
 
 @socketio.on('my event', namespace='/notification')
 def my_event(msg):
-    user = AccountUser.get_by_id(msg['data'])
-    session = AccountUserAuthenticated.get_by_user_id(user.id)
+    user = User.get_by_id(msg['data'])
+    session = UserAuthenticated.get_by_user_id(user.id)
     if session:
         session.delete()
         session.save()
     else:
-        db.session.add((AccountUserAuthenticated(user.id, flask.request.sid)))
+        db.session.add((UserAuthenticated(user.id, flask.request.sid)))
         db.session.commit()
-    data = {'message': '{0} is online'.format(user.get_full_name()), 'status': 'connect', 'id': user.id}
+    data = {'message': '{0} is online'.format(user.get_full_name), 'status': 'connect', 'id': user.id}
     socketio.emit('connection response', data, namespace='/notification')
     app.logger.info('Connection established by {}'.format(msg['data']))
-    online_users_data = AccountUser.get_online_users()
+    online_users_data = User.get_online_users()
     socketio.emit('online users', online_users_data, namespace='/notification')
 
 
@@ -55,10 +54,10 @@ def connect_handler():
 @socketio.on('disconnect', namespace='/notification')
 def disconnect():
     app.logger.info("Client disconnecting...")
-    session = AccountUserAuthenticated.get_by_session_id(flask.request.sid)
+    session = UserAuthenticated.get_by_session_id(flask.request.sid)
     session.delete()
     session.save()
-    online_users_data = AccountUser.get_online_users()
+    online_users_data = User.get_online_users()
     socketio.emit('online users', online_users_data, namespace='/notification')
     app.logger.info("Socket sent a message to notification namespace")
 
