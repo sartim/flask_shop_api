@@ -25,7 +25,6 @@ class User(BaseModel):
                                backref='user_sessions',
                                cascade="save-update, merge, ""delete",
                                lazy=True)
-    expenses = db.relationship('Expense', backref='user_expenses', lazy=True)
 
     def __init__(self, first_name=None, middle_name=None, last_name=None,
                  email=None, phone=None, password=None, token=None, image=None,
