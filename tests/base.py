@@ -1,4 +1,5 @@
 import os
+from unittest import mock
 
 from flask_migrate import Migrate, upgrade
 from app import app, db
@@ -36,7 +37,15 @@ class Base:
 
     @classmethod
     def setup_class(cls):
-        assert os.environ.get("TEST") == "TRUE"
+        # Mock environment variables
+        if not os.environ.get('ENV'):
+            with mock.patch.dict(os.environ, {
+                'ENV': 'TEST'
+            }, clear=True):
+                # Assert if environment is set to TEST
+                assert os.environ.get("ENV") == "TEST"
+        else:
+            assert os.environ.get("ENV") == "TEST"
         cls.load_paths()
         cls.create_test_app()
 
