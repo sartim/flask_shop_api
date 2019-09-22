@@ -20,15 +20,15 @@ load_dotenv(dotenv_path)
 
 def create_app():
     app = Flask(__name__)
-    if os.environ.get('DEV') == "TRUE":
+    if os.environ.get('ENV') == 'DEV':
         app.config.from_object(DevelopmentConfig)
         app.elasticsearch = elasticsearch
         app.logger.debug(" * ENV: DEVELOPMENT")
-    if os.environ.get('PROD') == "TRUE":
+    if os.environ.get('ENV') == 'PROD':
         app.config.from_object(ProductionConfig)
         app.elasticsearch = elasticsearch
         app.logger.debug(" * ENV: PRODUCTION")
-    if os.environ.get("TEST") == "TRUE":
+    if os.environ.get('ENV') == 'PROD':
         app.config.from_object(TestingConfig)
         app.elasticsearch = None
         app.logger.debug(" * ENV: TESTING")
