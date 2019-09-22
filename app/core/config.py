@@ -45,4 +45,3 @@ class TestingConfig(BaseConfig):
         BaseConfig.BASE_DIR, 'test.sqlite'
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
