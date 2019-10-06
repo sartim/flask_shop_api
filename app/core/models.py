@@ -26,8 +26,10 @@ class BaseModel(db.Model):
         return dict(kwargs)
 
     @classmethod
-    def response(cls, stitch):
-        raise NotImplemented
+    def response(cls, obj):
+        data = obj.__dict__
+        del data['_sa_instance_state']
+        return data
 
     @classmethod
     def get_by_id_data(cls, _id):
