@@ -12,6 +12,7 @@ from app.core.helpers.socket_utils import *
 from app.core.helpers.jwt_handlers import *
 from app.account.role.models import AccountRole
 from app.account.user.models import AccountUser
+from app.permission.models import Permission
 from app.account.user.role.models import AccountUserRole
 from app.order.status.models import OrderStatus
 from app.core.helpers import utils, validator
