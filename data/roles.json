@@ -1,0 +1,14 @@
+[
+  {
+    "name": "SUPERUSER",
+    "description": "Can create, view, update & delete all records"
+  },
+  {
+    "name": "ADMIN",
+    "description": "Can create, view & update all records"
+  },
+  {
+    "name": "REPORT_USER",
+    "description": "Can view & generate reports"
+  }
+]
