@@ -4,10 +4,8 @@ from datetime import datetime
 from io import StringIO
 from flask import request, make_response
 from flask_cors import cross_origin
-from flask_jwt_extended import (
-    jwt_required, create_access_token, create_refresh_token,
-    jwt_refresh_token_required, get_jwt_identity
-)
+from flask_jwt_extended import jwt_required
+
 from sqlalchemy import desc
 from app import app
 from app.core.api import BaseResource
@@ -16,58 +14,6 @@ from app.core.helpers import utils
 from app.core.helpers.decorators import validate
 from app.role.models import Role
 from app.user.models import User, UserRole
-
-
-class GenerateJwtApi(BaseResource):
-    decorators = [cross_origin()]
-
-    @validate(['email', 'password'])
-    def post(self):
-        email = request.json.get('email')
-        password = request.json.get('password')
-        if not request.is_json:
-            result = dict(message="Missing JSON in request")
-            return self.response(result, 400)
-        user = User.get_user_by_email(email)
-        if user:
-            if utils.check_password_hash(user.password, password):
-                app.logger.info("Logged in user with the email {0}".
-                                format(email))
-                access_token = create_access_token(identity=email,
-                                                   expires_delta=False)
-                refresh_token = create_refresh_token(identity=email)
-                result = dict(access_token=access_token,
-                              refresh_token=refresh_token,
-                              user=dict(
-                                  id=user.id,
-                                  full_name="{} {}".format(
-                                      user.first_name,
-                                      user.last_name,
-                                      email=user.email),
-                                  roles=[user_role.role.name for
-                                         user_role in user.roles]))
-                return self.response(result)
-            else:
-                app.logger.warning(
-                    "User with the email {0} does not exist".
-                    format(email))
-                result = dict(message="Bad username or password")
-                return self.response(result, 401)
-        else:
-            app.logger.warning("User with the email {0} does not exist".
-                               format(email))
-            result = dict(message="Bad username or password")
-            return self.response(result, 401)
-
-
-class RefreshJwtApi(BaseResource):
-    decorators = [cross_origin(), jwt_refresh_token_required]
-
-    def post(self):
-        current_user = get_jwt_identity()
-        result = dict(
-            access_token=create_access_token(identity=current_user))
-        return self.response(result)
 
 
 class UserApi(BaseResource):
@@ -117,10 +63,12 @@ class UserApi(BaseResource):
                     app.logger.warning(
                         '{} submitted password which does '
                         'not match existing password'
-                        .format(logged_in_user.get_full_name))
-                    return {
-                               "message": "Old password does not match existing password"
-                           }, 400
+                            .format(logged_in_user.get_full_name)
+                    )
+                    result = dict(
+                        message="Old password does not match existing password"
+                    )
+                    return self.response(result, 400)
                 password = utils.generate_password_hash(
                     request.json.get('new_password'),
                     app.config.get('BCRYPT_LOG_ROUNDS'))
@@ -142,15 +90,15 @@ class UserApi(BaseResource):
         result = dict(message="Successfully Saved!")
         return self.response(result, 201)
 
-    def delete(self, id=None):
+    def delete(self, user_id=None):
         logged_in_user = User.get_current_user()
-        user = User.get_by_id(id)
+        user = User.get_by_id(user_id)
         if user:
             try:
                 user.delete()
                 user.save()
                 app.logger.debug(
-                    "Successfully deleted user with id {}".format(id))
+                    "Successfully deleted user with id {}".format(user_id))
                 result = dict(message=Message.SUCCESS)
                 return self.response(result, 204)
             except Exception as e:
@@ -162,9 +110,9 @@ class UserApi(BaseResource):
                 return self.response(result, 400)
         app.logger.warning(
             '{} trying to delete user with id {} who does not exist'.
-            format(logged_in_user.name, id))
+                format(logged_in_user.name, user_id))
         result = dict(
-            message="User with id {} does not exist".format(id))
+            message="User with id {} does not exist".format(user_id))
         return self.response(result, 404)
 
 
@@ -225,26 +173,26 @@ class RoleApi(BaseResource):
         result = dict(message="Successfully Saved!")
         return self.response(result, 201)
 
-    def put(self, id=None):
-        role = Role.get_by_id(id=id)
+    def put(self, user_id=None):
+        role = Role.get_by_id(user_id)
         if not role:
             result = dict(message="Id not found")
             return self.response(result, 404)
-        updated = Role.update(id, **request.json)
+        updated = Role.update(user_id, **request.json)
         if not updated:
             result = dict(message="Did not update role.")
             return self.response(result, 400)
         result = dict(message="Successfully Updated!")
         return self.response(result, 201)
 
-    def delete(self, id=None):
-        role = Role.get_by_id(id)
+    def delete(self, user_id=None):
+        role = Role.get_by_id(user_id)
         if not role:
             result = dict(message="Id not found")
             return self.response(result, 404)
         result = role.delete()
         if result:
-            result = dict(message="Successfully deleted {}".format(id))
+            result = dict(message="Successfully deleted {}".format(user_id))
             return self.response(result)
-        result = dict(message="{} Not deleted".format(id))
+        result = dict(message="{} Not deleted".format(user_id))
         return self.response(result, 400)
