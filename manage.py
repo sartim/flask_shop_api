@@ -7,19 +7,17 @@ import click
 
 from flask import current_app
 from flask.cli import FlaskGroup
-from app import db, app, socketio
+
 from app.core.helpers.socket_utils import *
 from app.core.helpers.jwt_handlers import *
-from app.account.role.models import AccountRole
-from app.account.user.models import AccountUser
-from app.permission.models import Permission
-from app.account.user.role.models import AccountUserRole
-from app.order.status.models import OrderStatus
 from app.core.helpers import utils, validator
 from app.core import models
-from app.product.category.models import ProductCategory
+from app.permission.models import Permission
+from app.role.models import Role, RolePermission
+from app.user.models import User
+from app.category.models import Category
 from app.product.models import Product
-from app.order.models import Order
+from app.order.models import Order, OrderStatus
 from app.order.item.models import OrderItem
 from app.api_imports import *
 
