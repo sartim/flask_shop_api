@@ -18,8 +18,8 @@ class PermissionApi(BaseResource):
         roles = Permission.get_all_data(int(page) if page else None)
         return self.response(roles)
 
-    @content_type(['application/json'])
     @validate(['name'])
+    @content_type(['application/json'])
     def post(self):
         if not request.is_json:
             result = dict(message='Content type not json')
@@ -29,7 +29,6 @@ class PermissionApi(BaseResource):
         result = dict(message="Successfully Saved!")
         return self.response(result, 201)
 
-    @content_type(['application/json'])
     def put(self, permission_id=None):
         role = Permission.get_by_id(permission_id)
         if not role:
