@@ -3,5 +3,5 @@ from app.permission.api import PermissionApi
 
 register_api(
     PermissionApi, 'permission_api',
-    '/permissions/', pk='permission_id'
+    '/permissions', pk='permission_id'
 )
