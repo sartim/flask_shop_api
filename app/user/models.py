@@ -24,10 +24,13 @@ class User(BaseModel):
                                backref='user_sessions',
                                cascade="save-update, merge, ""delete",
                                lazy=True)
-    expenses = db.relationship('Expense', backref='user_expenses', lazy=True)
+    expenses = db.relationship('Expense', backref='user_expenses',
+                               lazy=True)
 
-    def __init__(self, first_name=None, middle_name=None, last_name=None,
-                 email=None, phone=None, password=None, token=None, image=None,
+    def __init__(self, first_name=None, middle_name=None,
+                 last_name=None,
+                 email=None, phone=None, password=None, token=None,
+                 image=None,
                  is_active=None):
         self.first_name = first_name
         self.middle_name = middle_name
@@ -77,10 +80,18 @@ class User(BaseModel):
 class UserRole(db.Model):
     __tablename__ = 'user_role'
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    role_id = db.Column(db.Integer, db.ForeignKey('role.id'), primary_key=True)
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+    user_id = db.Column(
+        db.Integer, db.ForeignKey('user.id'), primary_key=True
+    )
+    role_id = db.Column(
+        db.Integer, db.ForeignKey('role.id'), primary_key=True
+    )
+    created_at = db.Column(db.DateTime,
+                           default=db.func.current_timestamp())
+    updated_at = db.Column(
+        db.DateTime, default=db.func.current_timestamp(),
+        onupdate=db.func.current_timestamp()
+    )
 
     user = db.relationship('User', lazy=True)
     role = db.relationship('Role', lazy=True)
@@ -104,25 +115,39 @@ class UserRole(db.Model):
             self.save()
             return self
         except Exception as e:
-            app.logger.exception("Error creating object - {}. {}".format(self.__name__, str(e)))
+            app.logger.exception(
+                "Error creating object - {}. {}".format(
+                    self.__name__, str(e)
+                )
+            )
             return False
 
     @classmethod
     def save(cls):
         try:
             db.session.commit()
-            app.logger.debug('Successfully committed {} instance'.format(cls.__name__))
+            app.logger.debug(
+                'Successfully committed {} instance'.format(
+                    cls.__name__)
+            )
         except Exception:
-            app.logger.exception('Exception occurred. Could not save {} instance.'.format(cls.__name__))
+            app.logger.exception(
+                'Exception occurred. Could not save {} instance.'.format(
+                    cls.__name__)
+            )
 
 
 class UserAuthenticated(db.Model):
     __tablename__ = 'user_authenticated'
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
+                        primary_key=True)
     session_id = db.Column(db.String(255))
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+    created_at = db.Column(db.DateTime,
+                           default=db.func.current_timestamp())
+    updated_at = db.Column(db.DateTime,
+                           default=db.func.current_timestamp(),
+                           onupdate=db.func.current_timestamp())
 
     def __init__(self, user_id=None, session_id=None):
         self.user_id = user_id
@@ -148,12 +173,19 @@ class UserAuthenticated(db.Model):
             db.session.delete(self)
         except Exception:
             app.logger.exception(
-                'Could not delete {} instance.'.format(self.__name__))
+                'Could not delete {} instance.'.format(self.__name__)
+            )
 
     @classmethod
     def save(cls):
         try:
             db.session.commit()
-            app.logger.debug('Successfully committed {} instance'.format(cls.__name__))
+            app.logger.debug(
+                'Successfully committed {} instance'.format(
+                    cls.__name__)
+            )
         except Exception:
-            app.logger.exception('Exception occurred. Could not save {} instance.'.format(cls.__name__))
+            app.logger.exception(
+                'Exception occurred. Could not save {} instance.'.format(
+                    cls.__name__)
+            )
