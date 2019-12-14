@@ -2,16 +2,10 @@ import os
 
 from flask_migrate import Migrate, upgrade
 from app import app, db
-from app.account.role.models import AccountRole
-from app.account.user.models import AccountUser
-from app.account.user.role.models import AccountUserRole
-from app.product.models import Product
-from app.product.category.models import ProductCategory
-from app.order.models import Order
-from app.order.item.models import OrderItem
-from app.order.status.models import OrderStatus
-from app.core.helpers import utils
-from app.api_imports import *
+from app.user import urls
+from app.auth import urls
+from app.role import urls
+from app.permission import urls
 from manage import add_roles, add_demo_users, add_product_data
 
 
@@ -32,6 +26,13 @@ class Base:
             add_roles()
             add_demo_users()
             add_product_data()
+            cls.root_url = '/'
+            cls.generate_jwt_url = '/auth/generate-jwt'
+            cls.user_url = '/users'
+            cls.permission_url = '/permissions'
+            cls.role_url = '/roles'
+            cls.category_url = '/categories'
+            cls.status_url = '/statuses'
             # Generate token for authentication header
             req = cls.client.post('/account/generate/jwt/', json=dict(email='demo@mail.com', password='qwertytrewq'))
             cls.headers = {'Authorization': 'Bearer {}'.format(req.json['access_token'])}
