@@ -1,21 +1,30 @@
+import json
 from functools import wraps
 from flask import request
+from marshmallow import ValidationError
 
 from app import app
-from app.core.api import BaseResource
-from app.core.helpers import validator
 
 
-def validate(keys, fn=None):
+def validator(schema=None, fn=None):
     def wrapper(func):
         @wraps(func)
         def inner(*args, **kwargs):
+            body = request.data
+            msg = "Missing request body"
+            if not body:
+                return dict(message=msg), 400
+            if not json.loads(body):
+                return dict(message=msg), 400
             request_body = request.form.to_dict()
             if request.is_json:
-                request_body = request.get_json()
-            validated = validator.field_validator(keys, request_body)
-            if not validated["success"]:
-                return BaseResource.response(validated['data'], 400)
+                if request.json:
+                    request_body = request.get_json()
+            if schema:
+                try:
+                    schema.load(request_body)
+                except ValidationError as err:
+                    return err.messages
             resp = func(*args, **kwargs)
             return resp
         return inner
@@ -35,7 +44,7 @@ def content_type(keys, fn=None):
                     'Content type header is not {}'.format(keys[0]),
                     extra={'stack': True}
                 )
-                return BaseResource.response(result, 400)
+                return result, 400
             resp = func(*args, **kwargs)
             return resp
         return inner
