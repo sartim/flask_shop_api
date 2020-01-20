@@ -1,8 +1,8 @@
-from datetime import date, datetime
-
 import flask
 import os
+import sqlalchemy
 
+from datetime import date, datetime
 from flask_jwt_extended import get_jwt_identity
 from sqlalchemy import desc, func, extract
 
@@ -13,24 +13,28 @@ class AbstractBaseModel(db.Model):
     __abstract__ = True
 
     created_at = db.Column(
-        db.DateTime(timezone=True), default=db.func.current_timestamp()
+        db.DateTime(timezone=True), default=db.func.current_timestamp(),
+        nullable=False
     )
     updated_at = db.Column(
         db.DateTime(timezone=True), default=db.func.current_timestamp(),
-        onupdate=db.func.current_timestamp()
+        nullable=False, onupdate=db.func.current_timestamp()
     )
 
     def create(self):
         try:
             db.session.add(self)
-            self.save()
+            is_saved, msg = self.save()
+            if not is_saved:
+                return False, msg
         except Exception as e:
             app.logger.exception(
                 "Error creating object - {}. {}"
                     .format(self.__name__, str(e))
             )
-            return False
-        return self
+            return False, None
+        else:
+            return self, None
 
     @classmethod
     def save(cls):
@@ -38,21 +42,26 @@ class AbstractBaseModel(db.Model):
             db.session.commit()
             app.logger.debug('Successfully committed {} instance'
                              .format(cls.__name__))
+        except sqlalchemy.exc.IntegrityError:
+            app.logger.warning("Record already exists in {}"
+                               .format(cls.__name__))
+            return False, "Record already exists"
         except Exception:
             app.logger.exception(
                 'Exception occurred. Could not save {} instance.'
                     .format(cls.__name__)
             )
+            return False, None
+        else:
+            return cls, None
 
     @classmethod
     def revert(cls):
         return db.session.rollback()
 
     @classmethod
-    def response(cls, obj):
-        data = obj.__dict__
-        del data['_sa_instance_state']
-        return data
+    def to_dict(cls, schema, obj):
+        return schema.dump(obj)
 
 
 class BaseModel(AbstractBaseModel):
@@ -61,15 +70,15 @@ class BaseModel(AbstractBaseModel):
     id = db.Column(db.Integer, primary_key=True)
 
     @classmethod
-    def get_by_id_data(cls, _id):
+    def get_by_id_data(cls, schema, _id):
         obj = cls.get_by_id(_id)
-        data = cls.response(obj)
+        data = cls.to_dict(schema, obj)
         return data
 
     @classmethod
     def get_by_id(cls, _id):
         return cls.query.filter_by(id=_id) \
-            .first_or_404(description='No result found')
+            .first_or_404(description="Record not found.")
 
     @classmethod
     def get_current_user(cls):
@@ -89,8 +98,12 @@ class BaseModel(AbstractBaseModel):
         return True
 
     @classmethod
+    def filter_by(cls, **kwargs):
+        return cls.query.filter_by(**kwargs).first()
+
+    @classmethod
     def get_or_create(cls, **kwargs):
-        obj = cls.query.filter_by(**kwargs).first()
+        obj = cls.filter_by(**kwargs)
         if obj:
             return obj
         obj = cls(**kwargs)
@@ -113,11 +126,13 @@ class BaseModel(AbstractBaseModel):
     def delete(self):
         try:
             db.session.delete(self)
-            return True
+            db.session.commit()
         except Exception:
             app.logger.exception(
                 'Could not delete {} instance.'.format(self.__name__))
-        return False
+            return False
+        else:
+            return True
 
     @classmethod
     def build_response(cls, obj, results, path, _id=None, **kwargs):
@@ -165,16 +180,23 @@ class BaseModel(AbstractBaseModel):
         return data
 
     @classmethod
-    def get_all(cls, page):
-        query = cls.query.order_by(desc(cls.created_at))
+    def get_all(cls, **kwargs):
+        page = kwargs.get("page")
+        if len(kwargs) > 1:
+            if "page" in kwargs:
+                del kwargs["page"]
+            query = cls.query.filter_by(**kwargs).order_by(
+                desc(cls.created_at))
+        else:
+            query = cls.query.order_by(desc(cls.created_at))
         results = cls.paginate_result(query, page)
         return results
 
     @classmethod
-    def get_all_data(cls, page):
-        objects = cls.get_all(page)
+    def get_all_data(cls, schema, **kwargs):
+        objects = cls.get_all(**kwargs)
         return cls.build_paginated_response(
-            objects, flask.request.full_path
+            schema, objects, flask.request.full_path
         )
 
     @classmethod
@@ -210,10 +232,10 @@ class BaseModel(AbstractBaseModel):
         )
 
     @classmethod
-    def build_paginated_response(cls, objects, url):
+    def build_paginated_response(cls, schema, objects, url):
         results = []
         for obj in objects.items:
-            data = cls.response(obj)
+            data = cls.to_dict(schema, obj)
             results.append(data)
         data = cls.build_response(objects, results, url)
         return data
