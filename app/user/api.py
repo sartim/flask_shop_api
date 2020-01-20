@@ -5,45 +5,46 @@ from io import StringIO
 from flask import request, make_response
 from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
-
 from sqlalchemy import desc
 from app import app
-from app.core.api import BaseResource
-from app.core.constants import Message
-from app.core.helpers import utils
-from app.core.helpers.decorators import validate
+from app.core.base_resource import BaseResource
+from app.core.helpers.decorators import content_type, validator
 from app.role.models import Role
 from app.user.models import User, UserRole
+from app.core.helpers import password_helper
+from app.user.schemas import UserSchema
 
 
 class UserApi(BaseResource):
     decorators = [cross_origin(), jwt_required]
+    model = User
+    schema = UserSchema()
 
-    def get(self, user_id=None):
-        page = request.args.get('page')
-        if user_id is None:
-            users = User.get_all_data(int(page) if page else None)
-            return self.response(users)
-        user = User.get_by_id_data(user_id)
-        return self.response(user)
-
-    @validate(['first_name', 'last_name', 'email', 'phone', 'password',
-               'roles'])
+    @content_type(["application/json"])
+    @validator(schema)
     def post(self):
         if not request.is_json:
             result = dict(message='Content type not json')
             return self.response(result, 400)
         body = request.json
         roles = request.json.get('roles')
-        del body['roles']
+        if "roles" in body:
+            del body['roles']
         user_obj = User(**body).create()
-        for role in roles:
-            user_obj.roles.append(
-                UserRole(user_obj, Role.get_by_name(role).id))
-            user_obj.save()
-        result = dict(message="Successfully Saved!")
-        return self.response(result, 201)
+        if roles:
+            for role in roles:
+                user_obj.roles.append(
+                    UserRole(user_obj, Role.get_by_name(role).id))
+                user_obj.save()
+        if user_obj:
+            result = dict(message="Successfully saved record!")
+            return self.response(result, 201)
+        else:
+            result = dict(message="Could not save record!")
+            return self.response(result, 400)
 
+    @content_type(["application/json"])
+    @validator()
     def put(self, id=None):
         logged_in_user = User.get_current_user()
         if not request.is_json:
@@ -57,27 +58,24 @@ class UserApi(BaseResource):
         if 'old_password' and 'new_password' in request.json:
             if request.json.get('old_password') and request.json.get(
                     'new_password'):
-                confirm_password = utils.check_password_hash(
+                confirm_password = password_helper.check_password_hash(
                     user_obj.password, request.json.get('old_password'))
                 if not confirm_password:
                     app.logger.warning(
                         '{} submitted password which does '
                         'not match existing password'
-                            .format(logged_in_user.get_full_name)
-                    )
-                    result = dict(
-                        message="Old password does not match existing password"
-                    )
-                    return self.response(result, 400)
-                password = utils.generate_password_hash(
+                            .format(logged_in_user.get_full_name))
+                    return {
+                               "message": "Old password does not "
+                                          "match existing password"
+                           }, 400
+                password = password_helper.generate_password_hash(
                     request.json.get('new_password'),
-                    app.config.get('BCRYPT_LOG_ROUNDS'))
+                    app.config.get('BCRYPT_LOG_ROUNDS')
+                )
         user_obj.first_name = request.json.get(
             'first_name') if request.json.get(
             'first_name') else user_obj.first_name
-        user_obj.middle_name = request.json.get(
-            'middle_name') if request.json.get(
-            'middle_name') else user_obj.middle_name
         user_obj.last_name = request.json.get(
             'last_name') if request.json.get(
             'last_name') else user_obj.last_name
@@ -87,33 +85,8 @@ class UserApi(BaseResource):
             'phone') else user_obj.email
         user_obj.password = password if password else user_obj.password
         user_obj.save()
-        result = dict(message="Successfully Saved!")
+        result = dict(message="Successfully updated record!")
         return self.response(result, 201)
-
-    def delete(self, user_id=None):
-        logged_in_user = User.get_current_user()
-        user = User.get_by_id(user_id)
-        if user:
-            try:
-                user.delete()
-                user.save()
-                app.logger.debug(
-                    "Successfully deleted user with id {}".format(user_id))
-                result = dict(message=Message.SUCCESS)
-                return self.response(result, 204)
-            except Exception as e:
-                app.logger.exception(
-                    'Exception occurred. Made by {}'.format(
-                        logged_in_user.name))
-                result = dict(
-                    message='An error occurred. {}'.format(str(e)))
-                return self.response(result, 400)
-        app.logger.warning(
-            '{} trying to delete user with id {} who does not exist'.
-                format(logged_in_user.name, user_id))
-        result = dict(
-            message="User with id {} does not exist".format(user_id))
-        return self.response(result, 404)
 
 
 class OnlineStatusApi(BaseResource):
@@ -150,49 +123,3 @@ class DownloadUserApi(BaseResource):
         output.headers["Content-type"] = "text/csv"
         si.close()
         return output
-
-
-class RoleApi(BaseResource):
-    decorators = [cross_origin(), jwt_required]
-
-    def get(self, id=None):
-        page = request.args.get('page')
-        if id:
-            result = Role.get_by_id(id)
-            return self.response(**result)
-        roles = Role.get_all_data(int(page) if page else None)
-        return self.response(**roles)
-
-    @validate(['name'])
-    def post(self):
-        if not request.is_json:
-            result = dict(message='Content type not json')
-            return self.response(result, 400)
-        role = Role(**request.json)
-        role.create()
-        result = dict(message="Successfully Saved!")
-        return self.response(result, 201)
-
-    def put(self, user_id=None):
-        role = Role.get_by_id(user_id)
-        if not role:
-            result = dict(message="Id not found")
-            return self.response(result, 404)
-        updated = Role.update(user_id, **request.json)
-        if not updated:
-            result = dict(message="Did not update role.")
-            return self.response(result, 400)
-        result = dict(message="Successfully Updated!")
-        return self.response(result, 201)
-
-    def delete(self, user_id=None):
-        role = Role.get_by_id(user_id)
-        if not role:
-            result = dict(message="Id not found")
-            return self.response(result, 404)
-        result = role.delete()
-        if result:
-            result = dict(message="Successfully deleted {}".format(user_id))
-            return self.response(result)
-        result = dict(message="{} Not deleted".format(user_id))
-        return self.response(result, 400)
