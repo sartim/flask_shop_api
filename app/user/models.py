@@ -1,11 +1,11 @@
 from flask_jwt_extended import get_jwt_identity
 
-from app.core.models import BaseModel
+from app.core.base_model import BaseModel
 from app import db, app
 
 
 class User(BaseModel):
-    __tablename__ = 'user'
+    __tablename__ = "user"
 
     first_name = db.Column(db.String(255))
     middle_name = db.Column(db.String(255), nullable=True)
@@ -17,21 +17,18 @@ class User(BaseModel):
     image = db.Column(db.Text, nullable=True)
     is_active = db.Column(db.Boolean, default=False)
 
-    roles = db.relationship('UserRole',
-                            cascade="save-update, merge, delete",
-                            lazy=True)
-    sessions = db.relationship('UserAuthenticated',
-                               backref='user_sessions',
-                               cascade="save-update, merge, ""delete",
-                               lazy=True)
-    expenses = db.relationship('Expense', backref='user_expenses',
-                               lazy=True)
+    roles = db.relationship(
+        "UserRole", cascade="save-update, merge, delete", lazy=True
+    )
+    sessions = db.relationship(
+        "UserAuthenticated", backref='user_sessions',
+        cascade="save-update, merge, ""delete", lazy=True
+    )
 
-    def __init__(self, first_name=None, middle_name=None,
-                 last_name=None,
-                 email=None, phone=None, password=None, token=None,
-                 image=None,
-                 is_active=None):
+    def __init__(
+            self, first_name=None, middle_name=None,
+            last_name=None, email=None, phone=None, password=None,
+            token=None, image=None, is_active=None):
         self.first_name = first_name
         self.middle_name = middle_name
         self.last_name = last_name
@@ -78,30 +75,31 @@ class User(BaseModel):
 
 
 class UserRole(db.Model):
-    __tablename__ = 'user_role'
+    __tablename__ = "user_role"
 
     user_id = db.Column(
-        db.Integer, db.ForeignKey('user.id'), primary_key=True
+        db.Integer, db.ForeignKey("user.id"), primary_key=True
     )
     role_id = db.Column(
-        db.Integer, db.ForeignKey('role.id'), primary_key=True
+        db.Integer, db.ForeignKey("role.id"), primary_key=True
     )
-    created_at = db.Column(db.DateTime,
-                           default=db.func.current_timestamp())
+    created_at = db.Column(
+        db.DateTime, default=db.func.current_timestamp()
+    )
     updated_at = db.Column(
         db.DateTime, default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp()
     )
 
-    user = db.relationship('User', lazy=True)
-    role = db.relationship('Role', lazy=True)
+    user = db.relationship("User", lazy=True)
+    role = db.relationship("Role", lazy=True)
 
     def __init__(self, user_id=None, role_id=None):
         self.user_id = user_id
         self.role_id = role_id
 
     def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, self.user_id)
+        return "<%r (%r)" % (self.__class__.__name__, self.user_id)
 
     @classmethod
     def get_or_create(cls, user_id, roles):
@@ -113,14 +111,14 @@ class UserRole(db.Model):
         try:
             db.session.add(self)
             self.save()
-            return self
         except Exception as e:
             app.logger.exception(
                 "Error creating object - {}. {}".format(
-                    self.__name__, str(e)
-                )
+                    self.__name__, str(e))
             )
             return False
+        else:
+            return self
 
     @classmethod
     def save(cls):
@@ -138,23 +136,28 @@ class UserRole(db.Model):
 
 
 class UserAuthenticated(db.Model):
-    __tablename__ = 'user_authenticated'
+    __tablename__ = "user_authenticated"
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
-                        primary_key=True)
+    user_id = db.Column(
+        db.Integer, db.ForeignKey("user.id"), primary_key=True
+    )
     session_id = db.Column(db.String(255))
-    created_at = db.Column(db.DateTime,
-                           default=db.func.current_timestamp())
-    updated_at = db.Column(db.DateTime,
-                           default=db.func.current_timestamp(),
-                           onupdate=db.func.current_timestamp())
+    created_at = db.Column(
+        db.DateTime,
+        default=db.func.current_timestamp()
+    )
+    updated_at = db.Column(
+        db.DateTime,
+        default=db.func.current_timestamp(),
+        onupdate=db.func.current_timestamp()
+    )
 
     def __init__(self, user_id=None, session_id=None):
         self.user_id = user_id
         self.session_id = session_id
 
     def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, self.user_id)
+        return "<%r (%r)" % (self.__class__.__name__, self.user_id)
 
     @classmethod
     def get_by_session_id(cls, sid):
@@ -182,8 +185,7 @@ class UserAuthenticated(db.Model):
             db.session.commit()
             app.logger.debug(
                 'Successfully committed {} instance'.format(
-                    cls.__name__)
-            )
+                    cls.__name__))
         except Exception:
             app.logger.exception(
                 'Exception occurred. Could not save {} instance.'.format(
