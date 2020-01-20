@@ -8,17 +8,19 @@ from flask_jwt_extended import (
 )
 
 from app import app
-from app.core.api import BaseResource
-from app.core.helpers import utils
-from app.core.helpers.decorators import validate, content_type
+from app.core.base_resource import BaseResource
+from app.core.helpers.decorators import content_type, validator
 from app.user.models import User
+from app.auth.schemas import AuthSchema
+from app.core.helpers import password_helper
 
 
 class GenerateJwtApi(BaseResource):
     decorators = [cross_origin()]
+    schema = AuthSchema()
 
     @content_type(['application/json'])
-    @validate(['email', 'password'])
+    @validator(['email', 'password'])
     def post(self):
         email = request.json.get('email')
         password = request.json.get('password')
@@ -27,7 +29,7 @@ class GenerateJwtApi(BaseResource):
             return self.response(result, 400)
         user = User.get_user_by_email(email)
         if user:
-            if utils.check_password_hash(user.password, password):
+            if password_helper.check_password_hash(user.password, password):
                 app.logger.info(
                     "Logged in user with the email {0}".format(email))
                 access_token = create_access_token(
