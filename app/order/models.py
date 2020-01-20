@@ -4,7 +4,7 @@ import flask
 from datetime import date
 from sqlalchemy import func, desc
 
-from app.core.models import BaseModel
+from app.core.base_model import BaseModel
 from app import db
 from app.status.models import Status
 
@@ -13,9 +13,6 @@ class Order(BaseModel):
     __tablename__ = 'order'
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    customer_id = db.Column(
-        db.Integer, db.ForeignKey('customer.id'), nullable=True
-    )
     status_id = db.Column(db.Integer, db.ForeignKey('status.id'))
     order_total = db.Column(
         db.DECIMAL(precision=10, scale=2),

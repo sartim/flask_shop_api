@@ -1,5 +1,5 @@
 from app import db
-from app.core.models import BaseModel
+from app.core.base_model import BaseModel
 
 
 class Status(BaseModel):

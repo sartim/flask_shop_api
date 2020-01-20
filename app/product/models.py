@@ -3,7 +3,7 @@ import os
 from sqlalchemy import desc
 from sqlalchemy_utils import aggregated
 from app.core.mixins import SearchableMixin
-from app.core.models import Base
+from app.core.base_model import Base
 from app import db
 from app.product.category.models import ProductCategory
 from app.product.review.models import Review
