@@ -1,10 +1,19 @@
 import logging
 import os
+import sys
 
 from app import app, socketio
 from app.api_imports import *
 from app.core.helpers.jwt_handlers import *
-from app.api_imports import *
+from app.core.callbacks import *
+from app.auth import routes
+from app.user import routes
+from app.role import routes
+from app.permission import routes
+from app.status import routes
+from app.category import routes
+from app.product import routes
+
 
 if __name__ == "__main__":
     formatter = logging.Formatter(

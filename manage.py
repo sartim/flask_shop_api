@@ -11,20 +11,28 @@ from flask.cli import FlaskGroup
 from app.core.helpers.socket_utils import *
 from app.core.helpers.jwt_handlers import *
 from app.core.helpers import utils, validator
-from app.core import models
+from app.core import base_model
 from app.permission.models import Permission
 from app.role.models import Role, RolePermission
 from app.user.models import User
 from app.category.models import Category
 from app.product.models import Product
-from app.order.models import Order, OrderStatus
-from app.order.item.models import OrderItem
-from app.api_imports import *
+from app.order.models import Order, OrderItem
+from app.core.callbacks import *
+from app.auth import routes
+from app.user import routes
+from app.role import routes
+from app.permission import routes
+from app.status import routes
+from app.category import routes
+from app.product import routes
+
+
 
 
 @app.shell_context_processor
 def _make_context():
-    return dict(app=app, db=db, models=models)
+    return dict(app=app, db=db, models=base_model)
 
 
 @click.group(cls=FlaskGroup, create_app=app)
