@@ -9,6 +9,7 @@ from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 from app.config import DevelopmentConfig, ProductionConfig, TestingConfig
 from app.core.connection import elasticsearch
 
@@ -37,8 +38,8 @@ app = create_app()
 
 db = SQLAlchemy(app)
 db.init_app(app)
+ma = Marshmallow(app)
 migrate = Migrate(app, db)
-
 jwt = JWTManager(app)
 
 CORS(app, supports_credentials=True)
