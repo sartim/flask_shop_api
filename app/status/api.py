@@ -2,7 +2,7 @@ from flask import request
 from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
 
-from app.core.api import BaseResource
+from app.core.base_resource import BaseResource
 from app.core.helpers.decorators import validate
 from app.status.models import Status
 
