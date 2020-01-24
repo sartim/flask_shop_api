@@ -3,11 +3,11 @@ import os
 from unittest import mock
 from flask_migrate import Migrate, upgrade
 from app import app, db
-from app.user import urls
-from app.auth import urls
-from app.role import urls
-from app.permission import urls
 from manage import add_roles, add_demo_users, add_product_data
+from app.user import routes
+from app.auth import routes
+from app.role import routes
+from app.permission import routes
 
 
 class Base:
