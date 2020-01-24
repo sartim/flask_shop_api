@@ -1,3 +1,4 @@
+import json
 import logging
 import sys
 import csv
@@ -8,13 +9,14 @@ import click
 from flask import current_app
 from flask.cli import FlaskGroup
 
+from app import parse_config
 from app.core.helpers.socket_utils import *
 from app.core.helpers.jwt_handlers import *
 from app.core.helpers import utils, validator
 from app.core import base_model
 from app.permission.models import Permission
 from app.role.models import Role, RolePermission
-from app.user.models import User
+from app.user.models import User, UserRole
 from app.category.models import Category
 from app.product.models import Product
 from app.order.models import Order, OrderItem
@@ -26,8 +28,8 @@ from app.permission import routes
 from app.status import routes
 from app.category import routes
 from app.product import routes
-
-
+from core.helpers import password_helper
+from status.models import Status
 
 
 @app.shell_context_processor
@@ -42,6 +44,7 @@ def main():
 
 @main.command('run', short_help='Run development server.')
 def runserver():
+    parse_config(app)
     socketio.run(app)
 
 
@@ -58,42 +61,38 @@ def shell_command():
 
 
 def add_roles():
-    objects = [
-        AccountRole(name='SUPERUSER'),
-        AccountRole(name='ADMIN'),
-        AccountRole(name='STAFF'),
-        AccountRole(name='CLIENT')
-    ]
-    db.session.bulk_save_objects(objects)
-    db.session.commit()
+    with open('data/roles.json') as json_file:
+        items = json.load(json_file)
+        objects = [Role(**item).create() for item in items]
+        click.echo("Finished adding roles")
+        return objects
 
 
-def add_demo_users():
-    user = AccountUser(first_name="Demo", last_name="User",
-                       email="demo@mail.com", phone="254712345678",
-                       password=utils.generate_password_hash("qwertytrewq"),
-                       is_active=True)
-    db.session.add(user)
-    db.session.commit()
-    user_role = AccountUserRole(user_id=user.id, role_id=3)
-    db.session.add(user_role)
-    db.session.commit()
-    user = AccountUser(first_name="Demo2", last_name="User",
-                       email="demo2@mail.com", phone="254787654321",
-                       password=utils.generate_password_hash("qwertytrewq"),
-                       is_active=True)
-    db.session.add(user)
-    db.session.commit()
-    user_role = AccountUserRole(user_id=user.id, role_id=3)
-    db.session.add(user_role)
-    db.session.commit()
+def add_users():
+    with open('data/users.json') as json_file:
+        items = json.load(json_file)
+
+        def process(item):
+            roles = item['roles']
+            del item['roles']
+            item['password'] = password_helper.generate_password_hash(
+                item['password'])
+            obj, msg = User(**item).create()
+            roles = [Role.get_by_name(role) for role in roles]
+            obj.roles = [UserRole(obj.id, role.id) for role in roles]
+            obj.save()
+
+        objects = [process(item) for item in items]
+        click.echo("Finished adding users")
+        return objects
 
 
 def add_order_statuses():
-    objects = [OrderStatus(name='DRAFT'), OrderStatus(name='PENDING'),
-               OrderStatus('COMPLETE')]
-    db.session.bulk_save_objects(objects)
-    db.session.commit()
+    with open('data/statuses.json') as json_file:
+        items = json.load(json_file)
+        objects = [Status(**item).create() for item in items]
+        click.echo("Finished adding statuses")
+        return objects
 
 
 def add_client_data():
@@ -115,14 +114,15 @@ def add_product_data():
             product.price = price
             product.brand = brand
             product.image_urls = image_urls
-            category = ProductCategory.get_or_create_by_name(category)
+            category = Category.get_or_create_by_name(category)
             product.category_id = category.id
             product.items = items
             product.save()
             click.echo("Successfully finished adding data ")
 
 
-@main.command('create', short_help='Creates database tables from sqlalchemy models.')
+@main.command('create',
+              short_help='Creates database tables from sqlalchemy models.')
 def create():
     """
     Creates database tables from sqlalchemy models
@@ -131,7 +131,7 @@ def create():
     """
     db.create_all()
     add_roles()
-    add_demo_users()
+    add_users()
     add_order_statuses()
     add_product_data()
     click.echo("Finished creating tables!!! \n")
@@ -180,13 +180,14 @@ def create_superuser():
 
     if validate_email and not validate_pwd:
         try:
-            password = utils.generate_password_hash(password)
-            user = AccountUser(first_name=first_name, last_name=last_name,
-                               email=email, password=password,
-                               is_active=True)
+            password = password_helper.generate_password_hash(password)
+            user = User(
+                first_name=first_name, last_name=last_name,
+                email=email, password=password,
+                is_active=True)
             db.session.add(user)
             db.session.commit()
-            user_role = AccountUserRole(user_id=user.id, role_id=1)
+            user_role = UserRole(user_id=user.id, role_id=1)
             db.session.add(user_role)
             db.session.commit()
             click.echo("Successfully created admin account \n")
@@ -194,7 +195,8 @@ def create_superuser():
             click.echo(str(e))
 
 
-@main.command('createproducts', short_help='Creates products seeding data.')
+@main.command('createproducts',
+              short_help='Creates products seeding data.')
 def create_product_data():
     add_product_data()
     print("Finished seeding product data")
