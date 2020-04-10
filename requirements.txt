@@ -13,7 +13,7 @@ flask-marshmallow==0.11.0
 Flask-SocketIO==3.0.2
 gunicorn==19.9.0
 marshmallow-sqlalchemy==0.21.0
-nose2==0.7.4
+nose2==0.9.2
 psycopg2==2.8.4
 psycopg2-binary==2.8.5
 pycountry==19.8.18
