@@ -18,5 +18,5 @@ psycopg2==2.8.4
 psycopg2-binary==2.8.5
 pycountry==19.8.18
 pytest==5.4.1
-python-dotenv==0.9.1
+python-dotenv==0.17.0
 sqlalchemy-utils==0.36.1
