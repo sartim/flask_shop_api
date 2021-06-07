@@ -1,6 +1,6 @@
 certifi==2020.4.5.1
 bcrypt==3.1.7
-boto3==1.12.39
+boto3==1.17.88
 coverage==4.5.2
 elasticsearch==7.0.0
 eventlet==0.25.1
