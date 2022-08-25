@@ -3,13 +3,13 @@ import os
 from sqlalchemy import desc
 from sqlalchemy_utils import aggregated
 from app.core.mixins import SearchableMixin
-from app.core.base_model import Base
+from app.core.base_model import BaseModel
 from app import db
-from app.product.category.models import ProductCategory
-from app.product.review.models import Review
+from app.category.models import Category
+from app.review.models import Review
 
 
-class Product(Base, SearchableMixin):
+class Product(BaseModel, SearchableMixin):
 
     __tablename__ = 'products'
     __searchable__ = ['name', 'brand', 'category']
@@ -21,8 +21,8 @@ class Product(Base, SearchableMixin):
     price = db.Column(db.DECIMAL(precision=10, scale=2))
     category_id = db.Column(db.Integer, db.ForeignKey('product_categories.id'))
 
-    category = db.relationship(ProductCategory, backref='account_role', lazy=True)
-    reviews = db.relationship(Review)
+    category = db.relationship(Category, lazy=True)
+    reviews = db.relationship(Review, lazy=True)
 
     def __init__(self, name=None, brand=None, items=None, image_urls=None, price=None, category_id=None):
         self.name = name
