@@ -4,7 +4,7 @@ from app.permission.schemas import PermissionSchema
 from app.role.models import Role, RolePermission
 
 
-class RolePermissionSchema(ma.ModelSchema, BaseSchema):
+class RolePermissionSchema(ma.SQLAlchemySchema, BaseSchema):
     permission = ma.Nested(
         PermissionSchema(only=('name', 'description',)))
 
@@ -12,7 +12,7 @@ class RolePermissionSchema(ma.ModelSchema, BaseSchema):
         model = RolePermission
 
 
-class RoleSchema(ma.ModelSchema, BaseSchema):
+class RoleSchema(ma.SQLAlchemySchema, BaseSchema):
     permissions = ma.List(ma.Nested(
         RolePermissionSchema(only=('permission',))))
 
