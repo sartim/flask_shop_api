@@ -5,16 +5,14 @@ from app.role.models import Role, RolePermission
 
 
 class RolePermissionSchema(ma.SQLAlchemySchema, BaseSchema):
-    permission = ma.Nested(
-        PermissionSchema(only=('name', 'description',)))
+    permission = ma.Nested(PermissionSchema())
 
     class Meta:
         model = RolePermission
 
 
 class RoleSchema(ma.SQLAlchemySchema, BaseSchema):
-    permissions = ma.List(ma.Nested(
-        RolePermissionSchema(only=('permission',))))
+    # permissions = ma.List(ma.Nested(RolePermissionSchema()))
 
     class Meta:
         model = Role

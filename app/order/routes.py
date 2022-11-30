@@ -1,7 +1,7 @@
-from app.core.urls import register_api, register_basic_api
 from app.order.api import (
     OrderApi, OrderTotalSumTodayApi, OrderCountApi, OrderItemApi
 )
+from core.helpers.register_helper import register_api, register_basic_api
 
 register_api(
     OrderApi,

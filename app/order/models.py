@@ -3,7 +3,6 @@ import flask
 
 from datetime import date
 from sqlalchemy import func, desc
-
 from app.core.base_model import BaseModel
 from app import db
 from app.status.models import Status

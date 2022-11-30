@@ -1,5 +1,5 @@
 from app.user.api import (UserApi, DownloadUserApi, OnlineStatusApi)
-from app.core.urls import register_api, register_basic_api
+from app.core.helpers.register_helper import register_basic_api, register_api
 
 register_basic_api(
     DownloadUserApi, 'download_users_api',

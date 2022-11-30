@@ -9,7 +9,7 @@ from sqlalchemy import desc
 
 from app.core.base_resource import BaseResource
 from app.product.models import Product
-from product.schemas import ProductSchema
+from app.product.schemas import ProductSchema
 
 
 class ProductApi(BaseResource):
