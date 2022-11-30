@@ -18,7 +18,7 @@ REST API which exposes endpoints both for an online shop and a CMS admin. It's d
 
     $ virtualenv <envname> -p python3
     $ source <envname>/bin/activate
-    $ pip install -r requirements.txt
+    $ pip install -r requirements.txt --use-feature=2020-resolver 
 
 **Make migrations**
 
@@ -54,10 +54,6 @@ When using sqlite for test
     APP_EMAIL=app@email.com
     APP_EMAIL_PASSWORD=letmein
     LOG_LEVEL=DEBUG
-
-**Running app using heroku cli**
-
-    $ heroku local web
     
 **Running app using manage.py**
 
