@@ -28,8 +28,8 @@ from app.permission import routes
 from app.status import routes
 from app.category import routes
 from app.product import routes
-from core.helpers import password_helper
-from status.models import Status
+from app.core.helpers import password_helper
+from app.status.models import Status
 
 
 @app.shell_context_processor
