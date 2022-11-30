@@ -96,5 +96,5 @@ db.sqlite3
 
 # Other
 dev.sqlite
-
 scripts/
+.env
