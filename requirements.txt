@@ -1,7 +1,7 @@
 certifi==2022.6.15
 bcrypt==4.0.0
 boto3==1.18.12
-coverage==5.5
+coverage==7.0.4
 elasticsearch==8.3.3
 eventlet==0.25.1
 Flask==2.0.3
