@@ -4,7 +4,7 @@ boto3==1.18.12
 coverage==5.5
 elasticsearch==8.3.3
 eventlet==0.25.1
-Flask==2.0.3
+Flask==2.2.3
 Flask-Cors==3.0.10
 Flask-JWT-Extended==3.24.1
 Flask-Mail==0.9.1
