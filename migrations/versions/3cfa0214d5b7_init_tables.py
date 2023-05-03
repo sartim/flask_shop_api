@@ -1,8 +1,8 @@
 """Init tables
 
-Revision ID: eb6cca3af0ba
+Revision ID: 3cfa0214d5b7
 Revises: 
-Create Date: 2023-05-03 17:08:54.015480
+Create Date: 2023-05-03 17:14:22.400420
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'eb6cca3af0ba'
+revision = '3cfa0214d5b7'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -88,7 +88,7 @@ def upgrade():
     sa.Column('items', sa.Integer(), nullable=True),
     sa.Column('image_urls', sa.Text(), nullable=True),
     sa.Column('price', sa.DECIMAL(precision=10, scale=2), nullable=True),
-    sa.Column('category_id', sa.Integer(), nullable=True),
+    sa.Column('category_id', sa.UUID(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
     sa.ForeignKeyConstraint(['category_id'], ['category.id'], ),
@@ -113,7 +113,7 @@ def upgrade():
     )
     op.create_table('user_permission',
     sa.Column('user_id', sa.UUID(), nullable=False),
-    sa.Column('permission_id', sa.Integer(), nullable=False),
+    sa.Column('permission_id', sa.UUID(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
     sa.ForeignKeyConstraint(['permission_id'], ['permission.id'], ),
@@ -122,7 +122,7 @@ def upgrade():
     )
     op.create_table('user_role',
     sa.Column('user_id', sa.UUID(), nullable=False),
-    sa.Column('role_id', sa.Integer(), nullable=False),
+    sa.Column('role_id', sa.UUID(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['role_id'], ['role.id'], ),
