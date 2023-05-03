@@ -1,13 +1,19 @@
 from app import db
+from sqlalchemy import text
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class Review(db.Model):
-    __tablename__ = 'ratings'
+    __tablename__ = 'review'
 
+    id = db.Column(
+        UUID(as_uuid=True), primary_key=True,
+        server_default=text("uuid_generate_v4()")
+    )
     product_id = db.Column(
-        db.Integer, db.ForeignKey('product.id'), primary_key=True)
+        UUID(as_uuid=True), db.ForeignKey('product.id'))
     user_id = db.Column(
-        db.Integer, db.ForeignKey('user.id'), primary_key=True)
+        UUID(as_uuid=True), db.ForeignKey('user.id'))
     rating = db.Column(db.Integer)
     review = db.Column(db.Text, nullable=True)
 
