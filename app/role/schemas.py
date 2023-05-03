@@ -1,18 +1,35 @@
 from app import ma
-from app.core.base_schema import BaseSchema
+from webargs import fields
+from app.core.base_schema import (
+    AbstractBaseSchema, BaseSchema, base_args_schema)
 from app.permission.schemas import PermissionSchema
 from app.role.models import Role, RolePermission
 
 
-class RolePermissionSchema(ma.SQLAlchemySchema, BaseSchema):
-    permission = ma.Nested(PermissionSchema())
+class RolePermissionSchema(ma.SQLAlchemySchema, AbstractBaseSchema):
+    role_id = ma.Int(required=True)
+    permission_id = ma.Int(required=True)
+
+    permission = ma.Nested(
+        PermissionSchema(only=('name', 'description',)))
 
     class Meta:
         model = RolePermission
+        load_instance = True
 
 
 class RoleSchema(ma.SQLAlchemySchema, BaseSchema):
-    # permissions = ma.List(ma.Nested(RolePermissionSchema()))
+    name = ma.Str(required=True)
+    description = ma.Str()
 
     class Meta:
         model = Role
+
+
+role_args_schema = {
+    "id": fields.Int(),
+    "name": fields.Str(),
+    "description": fields.Str(),
+    "deleted": fields.Boolean()
+}
+role_args_schema = {**base_args_schema, **role_args_schema}
