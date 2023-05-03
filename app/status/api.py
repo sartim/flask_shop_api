@@ -7,7 +7,7 @@ from app.status.models import Status
 
 
 class StatusApi(BaseResource):
-    decorators = [cross_origin(), jwt_required]
+    decorators = [cross_origin(), jwt_required()]
 
     def get(self, status_id: int = None):
         page = request.args.get('page')

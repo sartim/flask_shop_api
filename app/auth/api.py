@@ -3,7 +3,7 @@ from flask_cors import cross_origin
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
-    jwt_refresh_token_required,
+    jwt_required,
     get_jwt_identity
 )
 
@@ -58,7 +58,7 @@ class GenerateJwtApi(BaseResource):
 
 
 class RefreshJwtApi(BaseResource):
-    decorators = [cross_origin(), jwt_refresh_token_required]
+    decorators = [cross_origin(), jwt_required(refresh=True)]
 
     def post(self):
         current_user = get_jwt_identity()

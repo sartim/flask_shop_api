@@ -7,6 +7,6 @@ from app.role.schemas import RoleSchema
 
 
 class RoleApi(BaseResource):
-    decorators = [cross_origin(), jwt_required]
+    decorators = [cross_origin(), jwt_required()]
     schema = RoleSchema()
     model = Role

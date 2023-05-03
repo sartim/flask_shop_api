@@ -13,13 +13,13 @@ from app.product.schemas import ProductSchema
 
 
 class ProductApi(BaseResource):
-    decorators = [cross_origin(), jwt_required]
+    decorators = [cross_origin(), jwt_required()]
     model = Product
     schema = ProductSchema
 
 
 class DownloadProductApi(BaseResource):
-    decorators = [cross_origin(), jwt_required]
+    decorators = [cross_origin(), jwt_required()]
 
     def get(self):
         si = StringIO()

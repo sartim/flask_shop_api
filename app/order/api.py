@@ -7,19 +7,19 @@ from app.order.schemas import OrderSchema, OrderItemSchema
 
 
 class OrderApi(BaseResource):
-    decorators = [cross_origin(), jwt_required]
+    decorators = [cross_origin(), jwt_required()]
     model = Order
     schema = OrderSchema
 
 
 class OrderItemApi(BaseResource):
-    decorators = [cross_origin(), jwt_required]
+    decorators = [cross_origin(), jwt_required()]
     model = OrderItem
     schema = OrderItemSchema
 
 
 class OrderTotalSumTodayApi(BaseResource):
-    decorators = [cross_origin(), jwt_required]
+    decorators = [cross_origin(), jwt_required()]
 
     def get(self):
         data = Order.get_today_sum()

@@ -7,6 +7,6 @@ from app.permission.schemas import PermissionSchema
 
 
 class PermissionApi(BaseResource):
-    decorators = [cross_origin(), jwt_required]
+    decorators = [cross_origin(), jwt_required()]
     model = Permission
     schema = PermissionSchema()
