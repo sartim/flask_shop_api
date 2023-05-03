@@ -21,7 +21,7 @@ class Product(BaseModel, SearchableMixin):
     items = db.Column(db.Integer)
     image_urls = db.Column(db.Text, nullable=True)
     price = db.Column(db.DECIMAL(precision=10, scale=2))
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    category_id = db.Column(UUID(as_uuid=True), db.ForeignKey('category.id'))
 
     category = db.relationship(Category, lazy=True)
     reviews = db.relationship(Review, lazy=True)
