@@ -2,11 +2,17 @@ from flask_jwt_extended import get_jwt_identity
 
 from app.core.base_model import BaseModel
 from app import db, app
+from sqlalchemy import text
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class User(BaseModel):
     __tablename__ = "user"
 
+    id = db.Column(
+        UUID(as_uuid=True), primary_key=True,
+        server_default=text("uuid_generate_v4()")
+    )
     first_name = db.Column(db.String(255))
     middle_name = db.Column(db.String(255), nullable=True)
     last_name = db.Column(db.String(255))
@@ -26,9 +32,10 @@ class User(BaseModel):
     )
 
     def __init__(
-            self, first_name=None, middle_name=None,
+            self, id=None, first_name=None, middle_name=None,
             last_name=None, email=None, phone=None, password=None,
             token=None, image=None, is_active=None):
+        self.id = id
         self.first_name = first_name
         self.middle_name = middle_name
         self.last_name = last_name

@@ -5,9 +5,9 @@ class Review(db.Model):
     __tablename__ = 'ratings'
 
     product_id = db.Column(
-        db.Integer, db.ForeignKey('products.id'), primary_key=True)
+        db.Integer, db.ForeignKey('product.id'), primary_key=True)
     user_id = db.Column(
-        db.Integer, db.ForeignKey('account_users.id'), primary_key=True)
+        db.Integer, db.ForeignKey('user.id'), primary_key=True)
     rating = db.Column(db.Integer)
     review = db.Column(db.Text, nullable=True)
 

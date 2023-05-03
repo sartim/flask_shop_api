@@ -19,16 +19,13 @@ class Order(BaseModel):
     )
 
     user = db.relationship('User', lazy=True)
-    customer = db.relationship('Customer', lazy=True)
     status = db.relationship(Status, lazy=True)
     items = db.relationship('OrderItem',
                             cascade="save-update, merge, delete",
                             lazy=True)
 
-    def __init__(self, user_id=None, customer_id=None,
-                 status_id=None, order_total=None):
+    def __init__(self, user_id=None, status_id=None, order_total=None):
         self.user_id = user_id
-        self.customer_id = customer_id
         self.status_id = status_id
         self.order_total = order_total
 
