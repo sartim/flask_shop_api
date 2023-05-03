@@ -1,5 +1,9 @@
 import json
+import secrets
 import pycountry
+
+RESULT_LEN = 6
+DIGITS = "0123456789"
 
 
 def list_countries():
@@ -18,3 +22,10 @@ def open_file(file_path, type_='json'):
         else:
             data = json.load(f)
     return data
+
+
+def generate_random_value(size: int = RESULT_LEN, digits: str = DIGITS) -> int:
+    """Generate random values based on the size and the digits preferred"""
+    random_int = int("".join(secrets.choice(digits) for i in range(size)))
+    return random_int
+
