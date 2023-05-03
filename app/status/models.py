@@ -19,11 +19,3 @@ class Status(BaseModel):
 
     def __repr__(self):
         return "<%r (%r)>" % (self.__class__.__name__, self.name)
-
-    @classmethod
-    def response(cls, status):
-        return dict(
-            id=status.id, name=status.name,
-            created_at=status.created_at,
-            updated_at=status.updated_at
-        )

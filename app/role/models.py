@@ -42,9 +42,3 @@ class RolePermission(AbstractBaseModel):
 
     def __repr__(self):
         return "<%r (%r)>" % (self.__class__.__name__, self.name)
-
-    @classmethod
-    def get_role_permission_data(cls, schema, role_id):
-        role_permission = cls.query.filter_by(role_id=role_id).all()
-        res = [cls.to_dict(schema, v) for v in role_permission]
-        return res
