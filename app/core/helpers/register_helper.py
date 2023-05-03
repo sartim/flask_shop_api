@@ -1,7 +1,7 @@
 from app import app
 
 
-def register_api(view, endpoint, url, pk='id', pk_type='int'):
+def register_api(view, endpoint, url, pk='_id', pk_type='int'):
     view_func = view.as_view(endpoint)
     app.add_url_rule(
         url, defaults={pk: None},
@@ -26,7 +26,7 @@ def register_basic_api(view, endpoint, url, methods=None):
 
 def register_complex_api(
         view, endpoint, url_path_one, url_path_two,
-        pk='id', pk_type='int'):
+        pk='_id', pk_type='int'):
     view_func = view.as_view(endpoint)
     app.add_url_rule(
         '{}/<{}:{}>{}'.format(url_path_one, pk_type, pk, url_path_two),
