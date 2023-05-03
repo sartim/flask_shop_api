@@ -20,7 +20,7 @@ class GenerateJwtApi(BaseResource):
     schema = AuthSchema()
 
     @content_type(['application/json'])
-    @validator(['email', 'password'])
+    @validator(schema)
     def post(self):
         email = request.json.get('email')
         password = request.json.get('password')
