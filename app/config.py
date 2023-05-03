@@ -17,6 +17,7 @@ class BaseConfig(object):
     CSRF_ENABLED = True
     CSRF_SESSION_KEY = os.environ.get('CSRF_SESSION_KEY')
     SECRET_KEY = os.environ.get('SECRET_KEY')
+    REDIS_URL = os.environ.get('REDIS_URL')
 
 
 class DevelopmentConfig(BaseConfig):
