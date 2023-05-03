@@ -44,8 +44,7 @@ def main():
 
 @main.command('run', short_help='Run development server.')
 def runserver():
-    parse_config(app)
-    socketio.run(app)
+    socketio.run(app, port=8000)
 
 
 @main.command('shell', short_help='Run a shell in the app context.')
