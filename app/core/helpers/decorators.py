@@ -24,7 +24,7 @@ def validator(schema=None, fn=None):
                 try:
                     schema.load(request_body)
                 except ValidationError as err:
-                    return err.messages
+                    return err.messages, 400
             resp = func(*args, **kwargs)
             return resp
         return inner
