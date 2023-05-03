@@ -13,9 +13,9 @@ class BaseResource(MethodView):
     model = None
     schema = None
 
-    def get(self, id=None):
-        if id:
-            obj = self.model.get_by_id(id)
+    def get(self, _id=None):
+        if _id:
+            obj = self.model.get_by_id(_id)
             if obj.deleted:
                 return self.response(RECORD_ALREADY_DELETED, 410)
             result = obj.to_dict(self.schema, obj)
@@ -36,19 +36,19 @@ class BaseResource(MethodView):
 
     @content_type(['application/json'])
     @validator()
-    def put(self, id=None):
-        obj = self.model.get_by_id(id)
+    def put(self, _id=None):
+        obj = self.model.get_by_id(_id)
         if obj.deleted:
             return self.response(RECORD_ALREADY_DELETED, 410)
-        updated = self.model.update(id, **request.json)
+        updated = self.model.update(_id, **request.json)
         if not updated:
             result = dict(message=RECORD_NOT_UPDATED)
             return self.response(result, 400)
         result = dict(message=RECORD_UPDATED)
         return self.response(result, 200)
 
-    def delete(self, id=None):
-        obj = self.model.get_by_id(id)
+    def delete(self, _id=None):
+        obj = self.model.get_by_id(_id)
         delete_type = request.args.get("delete_type")
         if obj.deleted:
             return self.response(RECORD_ALREADY_DELETED, 410)
@@ -59,9 +59,9 @@ class BaseResource(MethodView):
             result = obj.delete()
         if result:
             return self.response(
-                dict(message=RECORD_DELETED.format(id)), 200)
+                dict(message=RECORD_DELETED.format(_id)), 200)
         return self.response(
-            dict(message=RECORD_NOT_DELETED.format(id)), 400)
+            dict(message=RECORD_NOT_DELETED.format(_id)), 400)
 
     @staticmethod
     def response(payload=None, status=200):

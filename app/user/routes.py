@@ -9,4 +9,4 @@ register_basic_api(
     OnlineStatusApi, 'users_online_api',
     '/users/online', methods=['POST']
 )
-register_api(UserApi, 'user_api', '/users', pk='id')
+register_api(UserApi, 'user_api', '/users', pk='_id')
