@@ -20,10 +20,6 @@ load_dotenv(dotenv_path)
 
 def create_app():
     app = Flask(__name__)
-    return app
-
-
-def parse_config(app):
     if os.environ.get('ENV') == "DEV":
         app.config.from_object(DevelopmentConfig)
         app.elasticsearch = elasticsearch
@@ -36,10 +32,11 @@ def parse_config(app):
         app.config.from_object(TestingConfig)
         app.elasticsearch = None
         app.logger.debug(" * ENV: TESTING")
+    return app
+
 
 
 app = create_app()
-parse_config(app)
 parser = FlaskParser(app)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
