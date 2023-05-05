@@ -5,6 +5,7 @@ import csv
 import os
 import random
 import click
+import asyncio
 
 from flask import current_app
 from flask.cli import FlaskGroup
@@ -58,37 +59,37 @@ def shell_command():
         interact(local=ctx)
 
 
-def add_roles():
+async def add_roles():
     with open('data/roles.json') as json_file:
         items = json.load(json_file)
-        objects = [Role(**item).create() for item in items]
+        objects = [await Role(**item).create() for item in items]
         click.echo("Finished adding roles")
         return objects
 
 
-def add_users():
+async def add_users():
     with open('data/users.json') as json_file:
         items = json.load(json_file)
 
-        def process(item):
+        async def process(item):
             roles = item['roles']
             del item['roles']
             item['password'] = password_helper.generate_password_hash(
                 item['password'])
-            obj, msg = User(**item).create()
+            obj, msg = await User(**item).create()
             roles = [Role.get_by_name(role) for role in roles]
             obj.roles = [UserRole(obj.id, role.id) for role in roles]
-            obj.save()
+            await obj.save()
 
         objects = [process(item) for item in items]
         click.echo("Finished adding users")
         return objects
 
 
-def add_order_statuses():
+async def add_order_statuses():
     with open('data/statuses.json') as json_file:
         items = json.load(json_file)
-        objects = [Status(**item).create() for item in items]
+        objects = [await Status(**item).create() for item in items]
         click.echo("Finished adding statuses")
         return objects
 
@@ -97,7 +98,7 @@ def add_client_data():
     pass
 
 
-def add_product_data():
+async def add_product_data():
     with open('electronic_products_data.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         next(csv_reader)
@@ -108,14 +109,14 @@ def add_product_data():
             name = row[21]
             category = row[22]
             items = random.randint(5, 50)
-            product = Product.get_or_create_by_name(name)
+            product = await Product.get_or_create_by_name(name)
             product.price = price
             product.brand = brand
             product.image_urls = image_urls
-            category = Category.get_or_create_by_name(category)
+            category = await Category.get_or_create_by_name(category)
             product.category_id = category.id
             product.items = items
-            product.save()
+            await product.save()
             click.echo("Successfully finished adding data ")
 
 
@@ -128,11 +129,13 @@ def create():
     :param sample_data:
     """
     db.create_all()
-    add_roles()
-    add_users()
-    add_order_statuses()
-    add_product_data()
-    click.echo("Finished creating tables!!! \n")
+    async def process():
+        await add_roles()
+        await add_users()
+        await add_order_statuses()
+        await add_product_data()
+        click.echo("Finished creating tables!!! \n")
+    asyncio.run(process())
 
 
 @main.command('drop', short_help='Drops database tables.')
