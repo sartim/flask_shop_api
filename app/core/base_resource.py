@@ -16,21 +16,19 @@ class BaseResource(MethodView):
     model = None
     schema = None
     request_args = None
-    api_gateway_base_url = app.config.get("API_GATEWAY_BASE_URL")
 
-    @jwt_required()
     @check_permission()
-    def get(self, _id=None):
+    async def get(self, _id=None):
         endpoint = request.endpoint[:-4].upper()
         if _id:
-            obj = self.model.get_by_id(_id, **dict(endpoint=endpoint))
+            obj = await self.model.get_by_id(_id, **dict(endpoint=endpoint))
             if obj.deleted:
                 result = dict(message=ResponseMessage.RECORD_ALREADY_DELETED)
                 app.logger.warning("Record {} retrieval error. {}".format(
                     _id, result))
                 return self.response(result, 410)
-            result = obj.to_dict(self.schema, obj)
-            return self.response(result)
+            result = await obj.to_dict(self.schema, obj)
+            return await self.response(result)
         params = parser.parse(self.request_args, request, location='querystring')
         id_list = request.args.getlist("id")
         ids = None
@@ -40,103 +38,91 @@ class BaseResource(MethodView):
         params.update(endpoint=endpoint)
         if "deleted" not in params:
             params.update(deleted=False)
-        results = self.model.get_all_data(self.schema, ids, **params)
-        return self.response(results)
+        results = await self.model.get_all_data(self.schema, ids, **params)
+        return await self.response(results)
 
     @content_type(['application/json'])
     @validator()
     @check_permission()
-    def post(self):
-        endpoint = request.endpoint[:-4].upper()
+    async def post(self):
         data = request.json
-        if User.check_has_create_permission(endpoint):
-            try:
-                self.schema().load(request.json)
-            except ValidationError as err:
-                app.logger.warning("Record validation error. {}".format(
-                    err.messages))
-                return err.messages, 400
-            is_created, msg = self.model(**data).create()
-            if not is_created:
-                result = dict(
-                    message=msg if msg else ResponseMessage.RECORD_NOT_SAVED)
-                app.logger.warning("Record {} creation error. {}".format(
-                    request.json, result)
-                )
-                return self.response(result, 400)
-            self.delete_cached_query()
+        try:
+            self.schema().load(request.json)
+        except ValidationError as err:
+            app.logger.warning("Record validation error. {}".format(
+                err.messages))
+            return err.messages, 400
+        is_created, msg = await self.model(**data).create()
+        if not is_created:
             result = dict(
-                message=ResponseMessage.RECORD_SAVED,
-                data=self.model.to_dict(self.schema, is_created))
-            return self.response(result, 201)
-        result = dict(message=ResponseMessage.FORBIDDEN)
-        app.logger.warning("Forbidden. {}".format(result))
-        return self.response(result, 403)
+                message=msg if msg else ResponseMessage.RECORD_NOT_SAVED)
+            app.logger.warning("Record {} creation error. {}".format(
+                request.json, result)
+            )
+            return await self.response(result, 400)
+        await self.delete_cached_query()
+        result_data = await self.model.to_dict(self.schema, is_created)
+        result = dict(
+            message=ResponseMessage.RECORD_SAVED,
+            data=result_data)
+        return await self.response(result, 201)
 
     @content_type(['application/json'])
     @validator()
     @check_permission()
-    def put(self, _id):
+    async def put(self, _id):
         endpoint = request.endpoint[:-4].upper()
-        if User.check_has_update_permission(endpoint):
-            endpoint = request.endpoint[:-4].upper()
-            obj = self.model.get_by_id(_id, **dict(endpoint=endpoint))
-            data = request.json
-            if obj.deleted:
-                result = dict(ResponseMessage.RECORD_ALREADY_DELETED)
-                app.logger.warning("Record {} update error. {}".format(
-                    _id, result))
-                return self.response(result, 410)
-            updated = self.model.update(_id, **request.json)
-            if not updated:
-                result = dict(message=ResponseMessage.RECORD_NOT_UPDATED)
-                app.logger.warning("Record {} update error. {}".format(
-                    _id, result))
-                return self.response(result, 400)
-            self.delete_cached_query()
-            result = dict(
-                message=ResponseMessage.RECORD_UPDATED,
-                data=obj.to_dict(self.schema, obj)
-            )
-            return self.response(result, 200)
-        result = dict(message=ResponseMessage.FORBIDDEN)
-        app.logger.warning("Forbidden. {}".format(result))
-        return self.response(result, 403)
+        obj = await self.model.get_by_id(_id, **dict(endpoint=endpoint))
+        data = request.json
+        if obj.deleted:
+            result = dict(ResponseMessage.RECORD_ALREADY_DELETED)
+            app.logger.warning("Record {} update error. {}".format(
+                _id, result))
+            return await self.response(result, 410)
+        updated = await self.model.update(_id, **data)
+        if not updated:
+            result = dict(message=ResponseMessage.RECORD_NOT_UPDATED)
+            app.logger.warning("Record {} update error. {}".format(
+                _id, result))
+            return await self.response(result, 400)
+        await self.delete_cached_query()
+        result_data = await obj.to_dict(self.schema, obj)
+        result = dict(
+            message=ResponseMessage.RECORD_UPDATED,
+            data=result_data
+        )
+        return await self.response(result, 200)
 
     @check_permission()
-    def delete(self, _id):
+    async def delete(self, _id):
         endpoint = request.endpoint[:-4].upper()
-        if User.check_has_delete_permission(endpoint):
-            endpoint = request.endpoint[:-4].upper()
-            obj = self.model.get_by_id(_id, **dict(endpoint=endpoint))
-            delete_type = request.args.get("delete_type")
-            if obj.deleted:
-                result = dict(message=ResponseMessage.RECORD_ALREADY_DELETED)
-                app.logger.warning("Record {} retrieval error. {}".format(
-                    _id, result))
-                return self.response(result, 410)
-            if delete_type == "soft":
-                obj.deleted = True
-                result, msg = obj.save()
-            else:
-                result, msg = obj.delete()
-            if result:
-                self.delete_cached_query()
-                return self.response(
-                    dict(message=ResponseMessage.RECORD_DELETED), 200)
-            result = dict(message=ResponseMessage.RECORD_NOT_DELETED)
-            app.logger.warning("Record {} deletion error. {}".format(
+        obj = self.model.get_by_id(_id, **dict(endpoint=endpoint))
+        delete_type = request.args.get("delete_type")
+        if obj.deleted:
+            result = dict(message=ResponseMessage.RECORD_ALREADY_DELETED)
+            app.logger.warning("Record {} retrieval error. {}".format(
                 _id, result))
-            return self.response(result, 400)
-        result = dict(message=ResponseMessage.FORBIDDEN)
-        app.logger.warning("Forbidden. {}".format(result))
-        return self.response(result, 403)
+            return await self.response(result, 410)
+        if delete_type == "soft":
+            obj.deleted = True
+            result, msg = await obj.save()
+        else:
+            result, msg = await obj.delete()
+        if result:
+            await self.delete_cached_query()
+            return await self.response(
+                dict(message=ResponseMessage.RECORD_DELETED), 200)
+        result = dict(message=ResponseMessage.RECORD_NOT_DELETED)
+        app.logger.warning("Record {} deletion error. {}".format(
+            _id, result))
+        return await self.response(result, 400)
 
     @staticmethod
-    def response(payload=None, status=200):
+    async def response(payload=None, status=200):
         return jsonify(payload), status
 
-    def delete_cached_query(self):
+    @staticmethod
+    async def delete_cached_query():
         redis.delete(app.config.get("CACHED_QUERY"))
 
 
@@ -145,10 +131,10 @@ class ChildBaseResource(BaseResource):
     parent = None
 
     @check_permission()
-    def get(self, _id=None):
+    async def get(self, _id=None):
         endpoint = request.endpoint[:-4].upper()
         if _id:
-            obj = self.parent.get_by_id(_id, **dict(endpoint=endpoint))
+            obj = await self.parent.get_by_id(_id, **dict(endpoint=endpoint))
             if obj.deleted:
                 return self.response(ResponseMessage.RECORD_ALREADY_DELETED,
                                      410)
@@ -158,7 +144,7 @@ class ChildBaseResource(BaseResource):
                     self.request_args, request, location='querystring')
             params["" + self.field + ""] = _id
             params.update(endpoint=endpoint)
-            results = self.model.get_all_data(self.schema, None, **params)
+            results = await self.model.get_all_data(self.schema, None, **params)
             return self.response(results)
         results = dict(message="Record not found.")
         app.logger.warning("Record {} retrieval error. {}".format(_id, results))
@@ -167,7 +153,7 @@ class ChildBaseResource(BaseResource):
     @check_permission()
     @content_type(['application/json'])
     @validator()
-    def put(self, _id):
+    async def put(self, _id):
         endpoint = request.endpoint[:-4].upper()
         data = request.json
         try:
@@ -179,7 +165,7 @@ class ChildBaseResource(BaseResource):
             return result, 400
         if self.parent.get_by_id(_id, endpoint=endpoint):
             data["" + self.field] = _id
-            is_created, msg = self.model(**data).create()
+            is_created, msg = await self.model(**data).create()
             if not is_created:
                 result = dict(
                     message=msg if msg else ResponseMessage.RECORD_NOT_SAVED)
@@ -193,7 +179,7 @@ class ChildBaseResource(BaseResource):
         return self.response(result, 400)
 
     @check_permission()
-    def delete(self, _id):
+    async def delete(self, _id):
         params = request.args.to_dict()
         if not params:
             return self.response(
