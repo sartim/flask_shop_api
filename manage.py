@@ -9,7 +9,6 @@ import click
 from flask import current_app
 from flask.cli import FlaskGroup
 
-from app import parse_config
 from app.core.helpers.socket_utils import *
 from app.core.helpers.jwt_handlers import *
 from app.core.helpers import utils, validator
@@ -155,7 +154,7 @@ def recreate(default_data=True, sample_data=False):
     create(default_data, sample_data)
 
 
-@main.command('createsuperuser', short_help='Creates the superuser.')
+@main.command('create-super-user', short_help='Creates the superuser.')
 def create_superuser():
     """Creates the superuser"""
 
@@ -194,14 +193,14 @@ def create_superuser():
             click.echo(str(e))
 
 
-@main.command('createproducts',
+@main.command('create-products',
               short_help='Creates products seeding data.')
 def create_product_data():
     add_product_data()
     print("Finished seeding product data")
 
 
-@main.command('createorders', short_help='Creates orders seeding data.')
+@main.command('create-orders', short_help='Creates orders seeding data.')
 def create_order_data():
     pass
 
