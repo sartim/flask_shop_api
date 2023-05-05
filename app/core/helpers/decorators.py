@@ -10,7 +10,7 @@ from app.user.models import User
 def validator(schema=None, fn=None):
     def wrapper(func):
         @wraps(func)
-        async def inner(*args, **kwargs):
+        def inner(*args, **kwargs):
             body = request.data
             msg = "Missing request body"
             if not body:
@@ -26,7 +26,7 @@ def validator(schema=None, fn=None):
                     schema.load(request_body)
                 except ValidationError as err:
                     return err.messages, 400
-            resp = await func(*args, **kwargs)
+            resp = func(*args, **kwargs)
             return resp
         return inner
     return wrapper(fn) if fn else wrapper
