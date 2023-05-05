@@ -11,7 +11,7 @@ from flask import current_app
 from flask.cli import FlaskGroup
 from sqlalchemy import desc
 from app.core.helpers.socket_utils import *
-from app.core.helpers.jwt_handlers import *
+# from app.core.helpers.jwt_handlers import *
 from app.core.helpers import utils, validator
 from app.core import base_model
 from app.permission.models import Permission
@@ -77,11 +77,11 @@ async def add_users():
             item['password'] = password_helper.generate_password_hash(
                 item['password'])
             obj, msg = await User(**item).create()
-            roles = [Role.get_by_name(role) for role in roles]
+            roles = [await Role.get_by_name(role) for role in roles]
             obj.roles = [UserRole(obj.id, role.id) for role in roles]
             await obj.save()
 
-        objects = [process(item) for item in items]
+        objects = [await process(item) for item in items]
         click.echo("Finished adding users")
         return objects
 
@@ -133,7 +133,7 @@ def create():
         await add_roles()
         await add_users()
         await add_order_statuses()
-        await add_product_data()
+        # await add_product_data()
         click.echo("Finished creating tables!!! \n")
     asyncio.run(process())
 
