@@ -23,7 +23,7 @@ class AbstractBaseModel(db.Model):
         nullable=False, onupdate=db.func.current_timestamp()
     )
 
-    def create(self):
+    async def create(self):
         try:
             db.session.add(self)
             is_saved, msg = self.save()
@@ -39,11 +39,11 @@ class AbstractBaseModel(db.Model):
             return self, None
 
     @classmethod
-    def update(cls, _id, **kwargs):
+    async def update(cls, _id, **kwargs):
         try:
             cls.query.filter(cls.id == _id) \
                 .update(dict(**kwargs), synchronize_session='evaluate')
-            cls.save()
+            await cls.save()
         except Exception as e:
             app.logger.exception("Error occurred on update. {}"
                                  .format(str(e)))
@@ -51,7 +51,7 @@ class AbstractBaseModel(db.Model):
         return True
 
     @classmethod
-    def save(cls):
+    async def save(cls):
         try:
             db.session.commit()
             app.logger.debug('Successfully committed {} instance'
@@ -65,7 +65,7 @@ class AbstractBaseModel(db.Model):
             app.logger.exception(msg)
             return False, msg
         except Exception as e:
-            cls.revert()
+            await cls.revert()
             app.logger.exception(
                 'Exception occurred. Could not save {} instance.'
                     .format(cls.__name__)
@@ -74,7 +74,7 @@ class AbstractBaseModel(db.Model):
         else:
             return cls, None
 
-    def delete(self):
+    async def delete(self):
         try:
             db.session.delete(self)
             db.session.commit()
@@ -92,15 +92,15 @@ class AbstractBaseModel(db.Model):
             return True, ResponseMessage.RECORD_DELETED
 
     @classmethod
-    def revert(cls):
+    async def revert(cls):
         return db.session.rollback()
 
     @classmethod
-    def to_dict(cls, schema, obj):
+    async def to_dict(cls, schema, obj):
         return schema().dump(obj=obj)
 
     @classmethod
-    def build_response(cls, paginated_data, results, path, _id=None, **kwargs):
+    async def build_response(cls, paginated_data, results, path, _id=None, **kwargs):
         domain = flask.request.url_root.rstrip("/")
         if app.config.get("API_GATEWAY_URL"):
             domain = app.config.get("API_GATEWAY_URL")
@@ -148,7 +148,7 @@ class AbstractBaseModel(db.Model):
         return data
 
     @classmethod
-    def get_all(cls, ids, **kwargs):
+    async def get_all(cls, ids, **kwargs):
         page = kwargs.get("page")
         limit = kwargs.get("limit")
         sort = kwargs.get("sort")
@@ -176,7 +176,7 @@ class AbstractBaseModel(db.Model):
         if "end_updated_at" in kwargs:
             del kwargs["end_updated_at"]
 
-        query = cls.query.filter_by(**kwargs)
+        query = await cls.query.filter_by(**kwargs)
 
         if start_created_at and end_created_at:
             query = query.filter(cls.created_at <= end_created_at). \
@@ -203,7 +203,7 @@ class AbstractBaseModel(db.Model):
         return results
 
     @staticmethod
-    def paginated_result_caching(paginated_data):
+    async def paginated_result_caching(paginated_data):
         key = request.full_path
         if not redis.cache.exists(app.config.get("CACHED_QUERY")):
             redis.cache.hset(app.config.get("CACHED_QUERY"), b'na', b'na')
@@ -221,7 +221,7 @@ class AbstractBaseModel(db.Model):
             return paginated_data
 
     @classmethod
-    def get_all_data(cls, schema, ids, **kwargs):
+    async def get_all_data(cls, schema, ids, **kwargs):
         key = request.full_path
         cached_result = redis.hmget_payload(
             app.config.get("CACHED_QUERY"), key
@@ -243,7 +243,7 @@ class AbstractBaseModel(db.Model):
         )
 
     @classmethod
-    def paginate_result(cls, query, page, limit=None):
+    async def paginate_result(cls, query, page, limit=None):
         return query.paginate(
             page=page,
             per_page=int(
@@ -252,76 +252,76 @@ class AbstractBaseModel(db.Model):
         )
 
     @classmethod
-    def build_paginated_response(cls, schema, paginated_data, url):
+    async def build_paginated_response(cls, schema, paginated_data, url):
         results = []
         for obj in paginated_data["items"]:
-            data = cls.to_dict(schema, obj)
+            data = await cls.to_dict(schema, obj)
             results.append(data)
-        data = cls.build_response(paginated_data, results, url)
+        data = await cls.build_response(paginated_data, results, url)
         return data
 
     @classmethod
-    def get_by_id_data(cls, schema, _id):
-        obj = cls.get_by_id(_id)
-        data = cls.to_dict(schema, obj)
+    async def get_by_id_data(cls, schema, _id):
+        obj = await cls.get_by_id(_id)
+        data = await cls.to_dict(schema, obj)
         return data
 
     @classmethod
-    def get_by_id(cls, _id, **kwargs):
+    async def get_by_id(cls, _id, **kwargs):
         return cls.query.filter_by(id=_id) \
             .first_or_404(description="Record not found.")
 
     @classmethod
-    def get_current_user(cls):
+    async def get_current_user(cls):
         return cls.query \
             .filter_by(email=get_jwt_identity()).first()
 
     @classmethod
-    def filter_by(cls, **kwargs):
+    async def filter_by(cls, **kwargs):
         return cls.query.filter_by(**kwargs).first()
 
     @classmethod
-    def get_or_create(cls, **kwargs):
-        obj = cls.filter_by(**kwargs)
+    async def get_or_create(cls, **kwargs):
+        obj = await cls.filter_by(**kwargs)
         if obj:
             return obj
         obj = cls(**kwargs)
-        obj.create()
+        await obj.create()
         return obj
 
     @classmethod
-    def get_by_name(cls, name):
+    async def get_by_name(cls, name):
         return cls.query.filter_by(name=name).first()
 
     @classmethod
-    def get_or_create_by_name(cls, value):
+    async def get_or_create_by_name(cls, value):
         obj = cls.get_by_name(value)
         if obj:
             return obj
         obj = cls(value)
-        obj.create()
+        await obj.create()
         return obj
 
     @classmethod
-    def filter_all_today(cls):
+    async def filter_all_today(cls):
         return cls.query.filter(
             func.date(cls.created_at) == date.today()
         )
 
     @classmethod
-    def filter_all_this_month(cls):
+    async def filter_all_this_month(cls):
         return cls.query.filter(
             extract('month', cls.created_at) == datetime.now().month
         )
 
     @classmethod
-    def filter_all_last_month(cls):
+    async def filter_all_last_month(cls):
         return cls.query.filter(
             extract('month', cls.created_at) == datetime.now().month - 1
         )
 
     @classmethod
-    def filter_all_this_year(cls):
+    async def filter_all_this_year(cls):
         return cls.query.filter(
             extract('year', cls.created_at) == datetime.now().year
         )
