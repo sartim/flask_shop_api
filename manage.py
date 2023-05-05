@@ -8,7 +8,7 @@ import click
 
 from flask import current_app
 from flask.cli import FlaskGroup
-
+from sqlalchemy import desc
 from app.core.helpers.socket_utils import *
 from app.core.helpers.jwt_handlers import *
 from app.core.helpers import utils, validator
@@ -203,6 +203,23 @@ def create_product_data():
 @main.command('create-orders', short_help='Creates orders seeding data.')
 def create_order_data():
     pass
+
+
+def save_permissions(perm):
+    for permission in perm["permissions"]:
+        permission.update(path=perm["path"])
+        p = Permission.get_by_name(permission.get("name"))
+        if not p:
+            last_permission_id = Permission.query.order_by(
+                desc(Permission.created_at)).first().id
+            _id = last_permission_id + 1
+            permission.update(id=_id)
+            try:
+                Permission(**permission).create()
+                click.echo("Created permission: {}".format(permission))
+            except Exception as e:
+                db.session.rollback()
+                click.echo(str(e))
 
 
 cli = click.CommandCollection(sources=[main])
