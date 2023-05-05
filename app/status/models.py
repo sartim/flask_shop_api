@@ -12,10 +12,12 @@ class Status(BaseModel):
         server_default=text("uuid_generate_v4()")
     )
     name = db.Column(db.String(255), unique=True)
+    description = db.Column(db.Text)
 
-    def __init__(self, id=None, name=None):
+    def __init__(self, id=None, name=None, description=None):
         self.id = id
         self.name = name
+        self.description = description
 
     def __repr__(self):
         return "<%r (%r)>" % (self.__class__.__name__, self.name)
