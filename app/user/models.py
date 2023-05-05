@@ -3,8 +3,8 @@ from app.core.base_model import BaseModel, AbstractBaseModel
 from app import db, app
 from sqlalchemy import text, desc, asc
 from sqlalchemy.dialects.postgresql import UUID
-# from permission.models import Permission
-# from role.models import RolePermission
+from app.permission.models import Permission
+from app.role.models import RolePermission
 
 
 class User(BaseModel):
@@ -50,9 +50,9 @@ class User(BaseModel):
     def __repr__(self):
         return "<%r (%r)>" % (self.__class__.__name__, self.id)
 
-    def get_logged_in_id(self):
+    async def get_logged_in_id(self):
         email = get_jwt_identity()
-        user = self.get_user_by_email(email)
+        user = await self.get_user_by_email(email)
         if user:
             return str(user.id)
         return None
@@ -61,62 +61,33 @@ class User(BaseModel):
         return "{} {}".format(self.first_name, self.last_name)
 
     @classmethod
-    def get_user_by_email(cls, email):
+    async def get_user_by_email(cls, email):
         return cls.query.filter_by(email=email).first()
 
     @classmethod
-    def get_user_by_phone(cls, phone):
+    async def get_user_by_phone(cls, phone):
         return cls.query.filter_by(phone=phone).first()
 
-    # @classmethod
-    # def has_permission(cls, permission):
-    #     user = cls.get_current_user()
-    #     permission_obj = Permission.get_by_name(permission)
-    #     if permission_obj and user:
-    #         perm = UserPermission.filter_by(
-    #             permission_id=permission_obj.id, user_id=user.id)
-    #         if not perm:
-    #             for role in user.roles:
-    #                 perm = RolePermission.filter_by(
-    #                     role_id=role.role_id, permission_id=permission_obj.id
-    #                 )
-    #                 if perm:
-    #                     break
-    #             if perm:
-    #                 return perm
-    #     else:
-    #         app.logger.warning(
-    #             "Permissions {} does not exist.".format(permission))
-    #     return False
-
     @classmethod
-    def check_has_update_permission(cls, endpoint):
-        return User.has_permission("CAN_UPDATE_CREATE_{}".format(endpoint))
-
-    @classmethod
-    def check_has_delete_permission(cls, endpoint):
-        return User.has_permission("CAN_DELETE_{}".format(endpoint))
-
-    @classmethod
-    def check_has_view_permission(cls, endpoint):
-        return User.has_permission("CAN_VIEW_ALL_{}".format(endpoint))
-
-    @classmethod
-    def check_has_view(cls, endpoint):
-        return User.has_permission("CAN_VIEW_{}".format(endpoint))
-
-    @classmethod
-    def check_has_create_permission(cls, endpoint):
-        return User.has_permission("CAN_CREATE_{}".format(endpoint))
-
-    @classmethod
-    def check_has_belonging_view_permission(cls, endpoint):
-        return User.has_permission("CAN_VIEW_BELONGING_{}".format(endpoint))
-
-    @classmethod
-    def check_has_belonging_update_permission(cls, endpoint):
-        return User.has_permission(
-            "CAN_UPDATE_CREATE_BELONGING_{}".format(endpoint))
+    def has_permission(cls, permission):
+        user = cls.get_current_user()
+        permission_obj = Permission.get_by_name(permission)
+        if permission_obj and user:
+            perm = UserPermission.filter_by(
+                permission_id=permission_obj.id, user_id=user.id)
+            if not perm:
+                for role in user.roles:
+                    perm = RolePermission.filter_by(
+                        role_id=role.role_id, permission_id=permission_obj.id
+                    )
+                    if perm:
+                        break
+                if perm:
+                    return perm
+        else:
+            app.logger.warning(
+                "Permissions {} does not exist.".format(permission))
+        return False
 
     @classmethod
     def get_curr_user_roles(cls):
