@@ -7,6 +7,6 @@ from app.category.schemas import CategorySchema
 
 
 class CategoryApi(BaseResource):
-    decorators = [cross_origin(), jwt_required]
+    decorators = [cross_origin(), jwt_required()]
     model = Category
     schema = CategorySchema

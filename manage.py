@@ -5,13 +5,13 @@ import csv
 import os
 import random
 import click
+import asyncio
 
 from flask import current_app
 from flask.cli import FlaskGroup
-
-from app import parse_config
+from sqlalchemy import desc
 from app.core.helpers.socket_utils import *
-from app.core.helpers.jwt_handlers import *
+# from app.core.helpers.jwt_handlers import *
 from app.core.helpers import utils, validator
 from app.core import base_model
 from app.permission.models import Permission
@@ -28,8 +28,8 @@ from app.permission import routes
 from app.status import routes
 from app.category import routes
 from app.product import routes
-from core.helpers import password_helper
-from status.models import Status
+from app.core.helpers import password_helper
+from app.status.models import Status
 
 
 @app.shell_context_processor
@@ -44,8 +44,7 @@ def main():
 
 @main.command('run', short_help='Run development server.')
 def runserver():
-    parse_config(app)
-    socketio.run(app)
+    socketio.run(app, port=8000, debug=True)
 
 
 @main.command('shell', short_help='Run a shell in the app context.')
@@ -60,37 +59,37 @@ def shell_command():
         interact(local=ctx)
 
 
-def add_roles():
+async def add_roles():
     with open('data/roles.json') as json_file:
         items = json.load(json_file)
-        objects = [Role(**item).create() for item in items]
+        objects = [await Role(**item).create() for item in items]
         click.echo("Finished adding roles")
         return objects
 
 
-def add_users():
+async def add_users():
     with open('data/users.json') as json_file:
         items = json.load(json_file)
 
-        def process(item):
+        async def process(item):
             roles = item['roles']
             del item['roles']
             item['password'] = password_helper.generate_password_hash(
                 item['password'])
-            obj, msg = User(**item).create()
-            roles = [Role.get_by_name(role) for role in roles]
+            obj, msg = await User(**item).create()
+            roles = [await Role.get_by_name(role) for role in roles]
             obj.roles = [UserRole(obj.id, role.id) for role in roles]
-            obj.save()
+            await obj.save()
 
-        objects = [process(item) for item in items]
+        objects = [await process(item) for item in items]
         click.echo("Finished adding users")
         return objects
 
 
-def add_order_statuses():
+async def add_order_statuses():
     with open('data/statuses.json') as json_file:
         items = json.load(json_file)
-        objects = [Status(**item).create() for item in items]
+        objects = [await Status(**item).create() for item in items]
         click.echo("Finished adding statuses")
         return objects
 
@@ -99,7 +98,7 @@ def add_client_data():
     pass
 
 
-def add_product_data():
+async def add_product_data():
     with open('electronic_products_data.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         next(csv_reader)
@@ -110,14 +109,14 @@ def add_product_data():
             name = row[21]
             category = row[22]
             items = random.randint(5, 50)
-            product = Product.get_or_create_by_name(name)
+            product = await Product.get_or_create_by_name(name)
             product.price = price
             product.brand = brand
             product.image_urls = image_urls
-            category = Category.get_or_create_by_name(category)
+            category = await Category.get_or_create_by_name(category)
             product.category_id = category.id
             product.items = items
-            product.save()
+            await product.save()
             click.echo("Successfully finished adding data ")
 
 
@@ -130,11 +129,13 @@ def create():
     :param sample_data:
     """
     db.create_all()
-    add_roles()
-    add_users()
-    add_order_statuses()
-    add_product_data()
-    click.echo("Finished creating tables!!! \n")
+    async def process():
+        await add_roles()
+        await add_users()
+        await add_order_statuses()
+        # await add_product_data()
+        click.echo("Finished creating tables!!! \n")
+    asyncio.run(process())
 
 
 @main.command('drop', short_help='Drops database tables.')
@@ -156,7 +157,7 @@ def recreate(default_data=True, sample_data=False):
     create(default_data, sample_data)
 
 
-@main.command('createsuperuser', short_help='Creates the superuser.')
+@main.command('create-super-user', short_help='Creates the superuser.')
 def create_superuser():
     """Creates the superuser"""
 
@@ -195,16 +196,33 @@ def create_superuser():
             click.echo(str(e))
 
 
-@main.command('createproducts',
+@main.command('create-products',
               short_help='Creates products seeding data.')
 def create_product_data():
     add_product_data()
     print("Finished seeding product data")
 
 
-@main.command('createorders', short_help='Creates orders seeding data.')
+@main.command('create-orders', short_help='Creates orders seeding data.')
 def create_order_data():
     pass
+
+
+def save_permissions(perm):
+    for permission in perm["permissions"]:
+        permission.update(path=perm["path"])
+        p = Permission.get_by_name(permission.get("name"))
+        if not p:
+            last_permission_id = Permission.query.order_by(
+                desc(Permission.created_at)).first().id
+            _id = last_permission_id + 1
+            permission.update(id=_id)
+            try:
+                Permission(**permission).create()
+                click.echo("Created permission: {}".format(permission))
+            except Exception as e:
+                db.session.rollback()
+                click.echo(str(e))
 
 
 cli = click.CommandCollection(sources=[main])

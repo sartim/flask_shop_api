@@ -16,7 +16,7 @@ from app.user.schemas import UserSchema
 
 
 class UserApi(BaseResource):
-    decorators = [cross_origin(), jwt_required]
+    decorators = [cross_origin(), jwt_required()]
     model = User
     schema = UserSchema()
 
@@ -90,7 +90,7 @@ class UserApi(BaseResource):
 
 
 class OnlineStatusApi(BaseResource):
-    decorators = [cross_origin(), jwt_required]
+    decorators = [cross_origin(), jwt_required()]
 
     def get(self):
         users = User.get_online_users()
@@ -101,7 +101,7 @@ class OnlineStatusApi(BaseResource):
 
 
 class DownloadUserApi(BaseResource):
-    decorators = [cross_origin(), jwt_required]
+    decorators = [cross_origin(), jwt_required()]
 
     def get(self):
         si = StringIO()

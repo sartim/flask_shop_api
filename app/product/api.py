@@ -9,17 +9,17 @@ from sqlalchemy import desc
 
 from app.core.base_resource import BaseResource
 from app.product.models import Product
-from product.schemas import ProductSchema
+from app.product.schemas import ProductSchema
 
 
 class ProductApi(BaseResource):
-    decorators = [cross_origin(), jwt_required]
+    decorators = [cross_origin(), jwt_required()]
     model = Product
     schema = ProductSchema
 
 
 class DownloadProductApi(BaseResource):
-    decorators = [cross_origin(), jwt_required]
+    decorators = [cross_origin(), jwt_required()]
 
     def get(self):
         si = StringIO()

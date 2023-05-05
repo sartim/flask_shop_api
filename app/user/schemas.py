@@ -4,15 +4,15 @@ from app.role.schemas import RoleSchema
 from app.user.models import User, UserRole
 
 
-class UserRoleSchema(ma.ModelSchema, BaseSchema):
-    role = ma.Nested(RoleSchema(only=('name', 'description',)))
+class UserRoleSchema(ma.SQLAlchemySchema, BaseSchema):
+    # role = ma.Nested(RoleSchema(only=('name', 'description',)))
 
     class Meta:
         model = UserRole
 
 
-class UserSchema(ma.ModelSchema, BaseSchema):
-    roles = ma.List(ma.Nested(UserRoleSchema(only=('role',))))
+class UserSchema(ma.SQLAlchemySchema, BaseSchema):
+    # roles = ma.List(ma.Nested(UserRoleSchema(only=('role',))))
 
     class Meta:
         model = User

@@ -2,6 +2,16 @@ from flask import jsonify, request
 from app import app, jwt
 
 
+@app.route("/")
+def root_api():
+    return "", 200
+
+
+@app.route("/server-status")
+def server_status():
+    return "", 200
+
+
 @app.before_request
 def handle_method_not_allowed():
     if request.routing_exception:
@@ -15,9 +25,20 @@ def resource_not_found(e):
     return jsonify(message=message[1].strip()), 404
 
 
+@app.errorhandler(422)
+@app.errorhandler(400)
+def handle_error(err):
+    headers = err.data.get("headers", None)
+    messages = err.data.get("messages", ["Invalid request."])
+    if headers:
+        return jsonify(messages), err.code, headers
+    else:
+        return jsonify(messages), err.code
+
+
 @jwt.expired_token_loader
-def expired_token_callback(expired_token):
-    token_type = expired_token['type']
+def expired_token_callback(header, data):
+    token_type = data['type']
     return jsonify({
         'message': 'The {} token has expired'.format(token_type)
     }), 401

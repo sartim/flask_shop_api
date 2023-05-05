@@ -3,12 +3,11 @@ from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
 
 from app.core.base_resource import BaseResource
-from app.core.helpers.decorators import validate
 from app.status.models import Status
 
 
 class StatusApi(BaseResource):
-    decorators = [cross_origin(), jwt_required]
+    decorators = [cross_origin(), jwt_required()]
 
     def get(self, status_id: int = None):
         page = request.args.get('page')
@@ -18,7 +17,6 @@ class StatusApi(BaseResource):
         statuses = Status.get_all_data(int(page) if page else None)
         return self.response(statuses)
 
-    @validate(['name'])
     def post(self):
         if not request.is_json:
             result = dict(message='Content type not json')
