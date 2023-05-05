@@ -26,7 +26,7 @@ class AbstractBaseModel(db.Model):
     async def create(self):
         try:
             db.session.add(self)
-            is_saved, msg = self.save()
+            is_saved, msg = await self.save()
             if not is_saved:
                 return False, msg
         except Exception as e:
@@ -295,7 +295,7 @@ class AbstractBaseModel(db.Model):
 
     @classmethod
     async def get_or_create_by_name(cls, value):
-        obj = cls.get_by_name(value)
+        obj = await cls.get_by_name(value)
         if obj:
             return obj
         obj = cls(value)
