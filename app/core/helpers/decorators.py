@@ -10,7 +10,7 @@ from app.user.models import User
 def validator(schema=None, fn=None):
     def wrapper(func):
         @wraps(func)
-        def inner(*args, **kwargs):
+        async def inner(*args, **kwargs):
             body = request.data
             msg = "Missing request body"
             if not body:
@@ -26,7 +26,7 @@ def validator(schema=None, fn=None):
                     schema.load(request_body)
                 except ValidationError as err:
                     return err.messages, 400
-            resp = func(*args, **kwargs)
+            resp = await func(*args, **kwargs)
             return resp
         return inner
     return wrapper(fn) if fn else wrapper
@@ -36,7 +36,7 @@ def content_type(keys, fn=None):
     """Checks the content type header sent"""
     def wrapper(func):
         @wraps(func)
-        def inner(*args, **kwargs):
+        async def inner(*args, **kwargs):
             if not request.content_type in keys:
                 result = dict(
                     message='Content type header is not {}'.format(keys[0])
@@ -46,7 +46,7 @@ def content_type(keys, fn=None):
                     extra={'stack': True}
                 )
                 return result, 400
-            resp = func(*args, **kwargs)
+            resp = await func(*args, **kwargs)
             return resp
         return inner
     return wrapper(fn) if fn else wrapper
@@ -56,7 +56,7 @@ def check_permission(fn=None):
     """Checks permission for user"""
     def wrapper(func):
         @wraps(func)
-        def inner(*args, **kwargs):
+        async def inner(*args, **kwargs):
             endpoint = request.endpoint
             if not endpoint == "generate_jwt_api" or \
                     not endpoint == "refresh_jwt_api":
@@ -77,7 +77,7 @@ def check_permission(fn=None):
                 perm = User.has_permission(permission)
                 if not perm:
                     return result, 403
-            resp = func(*args, **kwargs)
+            resp = await func(*args, **kwargs)
             return resp
         return inner
     return wrapper(fn) if fn else wrapper
