@@ -21,13 +21,13 @@ class GenerateJwtApi(BaseResource):
 
     @content_type(['application/json'])
     @validator(schema)
-    def post(self):
+    async def post(self):
         email = request.json.get('email')
         password = request.json.get('password')
         if not request.is_json:
             result = dict(message="Missing JSON in request")
-            return self.response(result, 400)
-        user = User.get_user_by_email(email)
+            return await self.response(result, 400)
+        user = await User.get_user_by_email(email)
         if user:
             if password_helper.check_password_hash(user.password, password):
                 app.logger.info(
@@ -49,19 +49,18 @@ class GenerateJwtApi(BaseResource):
                         roles=[user_role.role.name for user_role in user.roles]
                     )
                 )
-                return self.response(result)
-        else:
-            app.logger.warning(
-                "User with the email {0} does not exist".format(email))
-            result = dict(message="Bad username or password")
-            return self.response(result, 401)
+                return await self.response(result)
+        app.logger.warning(
+            "User with the email {0} does not exist".format(email))
+        result = dict(message="Bad username or password")
+        return await self.response(result, 401)
 
 
 class RefreshJwtApi(BaseResource):
     decorators = [cross_origin(), jwt_required(refresh=True)]
 
-    def post(self):
+    async def post(self):
         current_user = get_jwt_identity()
         result = dict(
             access_token=create_access_token(identity=current_user))
-        return self.response(result)
+        return await self.response(result)
