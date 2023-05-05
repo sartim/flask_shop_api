@@ -3,7 +3,7 @@ import os
 import sys
 
 from app import app, socketio
-from app.core.helpers.jwt_handlers import *
+# from app.core.helpers.jwt_handlers import *
 from app.core.callbacks import *
 from app.auth import routes
 from app.user import routes
