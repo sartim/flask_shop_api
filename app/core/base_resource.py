@@ -18,17 +18,17 @@ class BaseResource(MethodView):
     request_args = None
 
     @check_permission()
-    async def get(self, _id=None):
+    def get(self, _id=None):
         endpoint = request.endpoint[:-4].upper()
         if _id:
-            obj = await self.model.get_by_id(_id, **dict(endpoint=endpoint))
+            obj = self.model.get_by_id(_id, **dict(endpoint=endpoint))
             if obj.deleted:
                 result = dict(message=ResponseMessage.RECORD_ALREADY_DELETED)
                 app.logger.warning("Record {} retrieval error. {}".format(
                     _id, result))
                 return self.response(result, 410)
-            result = await obj.to_dict(self.schema, obj)
-            return await self.response(result)
+            result = obj.to_dict(self.schema, obj)
+            return self.response(result)
         params = parser.parse(self.request_args, request, location='querystring')
         id_list = request.args.getlist("id")
         ids = None
@@ -38,13 +38,13 @@ class BaseResource(MethodView):
         params.update(endpoint=endpoint)
         if "deleted" not in params:
             params.update(deleted=False)
-        results = await self.model.get_all_data(self.schema, ids, **params)
-        return await self.response(results)
+        results = self.model.get_all_data(self.schema, ids, **params)
+        return self.response(results)
 
     @content_type(['application/json'])
     @validator()
     @check_permission()
-    async def post(self):
+    def post(self):
         data = request.json
         try:
             self.schema().load(request.json)
@@ -52,49 +52,49 @@ class BaseResource(MethodView):
             app.logger.warning("Record validation error. {}".format(
                 err.messages))
             return err.messages, 400
-        is_created, msg = await self.model(**data).create()
+        is_created, msg = self.model(**data).create()
         if not is_created:
             result = dict(
                 message=msg if msg else ResponseMessage.RECORD_NOT_SAVED)
             app.logger.warning("Record {} creation error. {}".format(
                 request.json, result)
             )
-            return await self.response(result, 400)
-        await self.delete_cached_query()
-        result_data = await self.model.to_dict(self.schema, is_created)
+            return self.response(result, 400)
+        self.delete_cached_query()
+        result_data = self.model.to_dict(self.schema, is_created)
         result = dict(
             message=ResponseMessage.RECORD_SAVED,
             data=result_data)
-        return await self.response(result, 201)
+        return self.response(result, 201)
 
     @content_type(['application/json'])
     @validator()
     @check_permission()
-    async def put(self, _id):
+    def put(self, _id):
         endpoint = request.endpoint[:-4].upper()
-        obj = await self.model.get_by_id(_id, **dict(endpoint=endpoint))
+        obj = self.model.get_by_id(_id, **dict(endpoint=endpoint))
         data = request.json
         if obj.deleted:
             result = dict(ResponseMessage.RECORD_ALREADY_DELETED)
             app.logger.warning("Record {} update error. {}".format(
                 _id, result))
-            return await self.response(result, 410)
-        updated = await self.model.update(_id, **data)
+            return self.response(result, 410)
+        updated = self.model.update(_id, **data)
         if not updated:
             result = dict(message=ResponseMessage.RECORD_NOT_UPDATED)
             app.logger.warning("Record {} update error. {}".format(
                 _id, result))
-            return await self.response(result, 400)
-        await self.delete_cached_query()
-        result_data = await obj.to_dict(self.schema, obj)
+            return self.response(result, 400)
+        self.delete_cached_query()
+        result_data = obj.to_dict(self.schema, obj)
         result = dict(
             message=ResponseMessage.RECORD_UPDATED,
             data=result_data
         )
-        return await self.response(result, 200)
+        return self.response(result, 200)
 
     @check_permission()
-    async def delete(self, _id):
+    def delete(self, _id):
         endpoint = request.endpoint[:-4].upper()
         obj = self.model.get_by_id(_id, **dict(endpoint=endpoint))
         delete_type = request.args.get("delete_type")
@@ -102,27 +102,27 @@ class BaseResource(MethodView):
             result = dict(message=ResponseMessage.RECORD_ALREADY_DELETED)
             app.logger.warning("Record {} retrieval error. {}".format(
                 _id, result))
-            return await self.response(result, 410)
+            return self.response(result, 410)
         if delete_type == "soft":
             obj.deleted = True
-            result, msg = await obj.save()
+            result, msg = obj.save()
         else:
-            result, msg = await obj.delete()
+            result, msg = obj.delete()
         if result:
-            await self.delete_cached_query()
-            return await self.response(
+            self.delete_cached_query()
+            return self.response(
                 dict(message=ResponseMessage.RECORD_DELETED), 200)
         result = dict(message=ResponseMessage.RECORD_NOT_DELETED)
         app.logger.warning("Record {} deletion error. {}".format(
             _id, result))
-        return await self.response(result, 400)
+        return self.response(result, 400)
 
     @staticmethod
-    async def response(payload=None, status=200):
+    def response(payload=None, status=200):
         return jsonify(payload), status
 
     @staticmethod
-    async def delete_cached_query():
+    def delete_cached_query():
         redis.delete(app.config.get("CACHED_QUERY"))
 
 
@@ -131,10 +131,10 @@ class ChildBaseResource(BaseResource):
     parent = None
 
     @check_permission()
-    async def get(self, _id=None):
+    def get(self, _id=None):
         endpoint = request.endpoint[:-4].upper()
         if _id:
-            obj = await self.parent.get_by_id(_id, **dict(endpoint=endpoint))
+            obj = self.parent.get_by_id(_id, **dict(endpoint=endpoint))
             if obj.deleted:
                 return self.response(ResponseMessage.RECORD_ALREADY_DELETED,
                                      410)
@@ -144,7 +144,7 @@ class ChildBaseResource(BaseResource):
                     self.request_args, request, location='querystring')
             params["" + self.field + ""] = _id
             params.update(endpoint=endpoint)
-            results = await self.model.get_all_data(self.schema, None, **params)
+            results = self.model.get_all_data(self.schema, None, **params)
             return self.response(results)
         results = dict(message="Record not found.")
         app.logger.warning("Record {} retrieval error. {}".format(_id, results))
@@ -153,7 +153,7 @@ class ChildBaseResource(BaseResource):
     @check_permission()
     @content_type(['application/json'])
     @validator()
-    async def put(self, _id):
+    def put(self, _id):
         endpoint = request.endpoint[:-4].upper()
         data = request.json
         try:
@@ -165,7 +165,7 @@ class ChildBaseResource(BaseResource):
             return result, 400
         if self.parent.get_by_id(_id, endpoint=endpoint):
             data["" + self.field] = _id
-            is_created, msg = await self.model(**data).create()
+            is_created, msg = self.model(**data).create()
             if not is_created:
                 result = dict(
                     message=msg if msg else ResponseMessage.RECORD_NOT_SAVED)
@@ -179,7 +179,7 @@ class ChildBaseResource(BaseResource):
         return self.response(result, 400)
 
     @check_permission()
-    async def delete(self, _id):
+    def delete(self, _id):
         params = request.args.to_dict()
         if not params:
             return self.response(

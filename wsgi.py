@@ -2,7 +2,7 @@ import logging
 import os
 import sys
 
-from app import app, socketio
+from app import app
 # from app.core.helpers.jwt_handlers import *
 from app.core.callbacks import *
 from app.auth import routes
@@ -31,4 +31,4 @@ if __name__ == "__main__":
     app.logger.addHandler(handler)
 
     app.logger.info('Application Starting...')
-    socketio.run(app, host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000)
