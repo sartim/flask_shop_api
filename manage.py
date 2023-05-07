@@ -6,8 +6,8 @@ import os
 import random
 import click
 
-from quart import current_app
-from quart.cli import QuartGroup
+from flask import current_app
+from flask.cli import FlaskGroup
 from sqlalchemy import desc
 from app.core.helpers.socket_utils import *
 # from app.core.helpers.jwt_handlers import *
@@ -36,14 +36,14 @@ def _make_context():
     return dict(app=app, db=db, models=base_model)
 
 
-@click.group(cls=QuartGroup, create_app=app)
+@click.group(cls=FlaskGroup, create_app=app)
 def main():
     """This is a management script for the application."""
 
 
 @main.command('run', short_help='Run development server.')
 def runserver():
-    app.run(port=8000)
+    socketio.run(app, port=8000, debug=True)
 
 
 @main.command('shell', short_help='Run a shell in the app context.')
