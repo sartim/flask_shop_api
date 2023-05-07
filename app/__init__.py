@@ -10,7 +10,7 @@ from flask_migrate import Migrate
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
-from app.config import DevelopmentConfig, ProductionConfig, TestingConfig
+from app.core.config import DevelopmentConfig, ProductionConfig, TestingConfig
 from app.core.connection import elasticsearch
 from webargs.flaskparser import FlaskParser
 
