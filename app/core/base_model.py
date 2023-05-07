@@ -227,7 +227,7 @@ class AbstractBaseModel(db.Model):
             app.config.get("CACHED_QUERY"), key
         )
         if not cached_result:
-            paginated_object = cls.get_all(ids, **kwargs)
+            paginated_object = await cls.get_all(ids, **kwargs)
             paginated_data = dict(
                 next_page=paginated_object.next_num,
                 prev_page=paginated_object.prev_num,
@@ -235,10 +235,10 @@ class AbstractBaseModel(db.Model):
                 total=paginated_object.total,
                 items=paginated_object.items
             )
-            paginated_data = cls.paginated_result_caching(paginated_data)
+            paginated_data = await cls.paginated_result_caching(paginated_data)
         else:
             paginated_data = serializer.deserialize(cached_result)
-        return cls.build_paginated_response(
+        return await cls.build_paginated_response(
             schema, paginated_data, flask.request.path
         )
 
@@ -246,8 +246,7 @@ class AbstractBaseModel(db.Model):
     async def paginate_result(cls, query, page, limit=None):
         return query.paginate(
             page=page,
-            per_page=int(
-                app.config.get('PAGINATE_BY')) if not limit else limit,
+            per_page=int(app.config.get("PAGINATE_BY")) if not limit else limit,
             error_out=True
         )
 

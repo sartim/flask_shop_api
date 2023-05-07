@@ -12,13 +12,14 @@ from app.core.helpers.decorators import content_type, validator
 from app.role.models import Role
 from app.user.models import User, UserRole
 from app.core.helpers import password_helper
-from app.user.schemas import UserSchema
+from app.user.schemas import UserSchema, user_args_schema
 
 
 class UserApi(BaseResource):
     decorators = [cross_origin(), jwt_required()]
     model = User
     schema = UserSchema()
+    request_args = user_args_schema
 
     @content_type(["application/json"])
     @validator(schema)

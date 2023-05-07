@@ -1,5 +1,6 @@
 from app import ma
-from app.core.base_schema import BaseSchema
+from webargs import fields as fd
+from app.core.base_schema import BaseSchema, base_args_schema
 from app.role.schemas import RoleSchema
 from app.user.models import User, UserRole
 
@@ -21,3 +22,14 @@ class UserSchema(ma.SQLAlchemySchema, BaseSchema):
             'email', 'phone', 'addresses',
             'roles', 'image', 'created_at', 'updated_at'
         )
+
+
+user_args_schema = {
+    "id": fd.Int(),
+    "first_name": fd.Str(),
+    "last_name": fd.Str(),
+    "email": fd.Str(),
+    "phone": fd.Str(),
+    "is_active": fd.Boolean()
+}
+user_args_schema = {**base_args_schema, **user_args_schema}

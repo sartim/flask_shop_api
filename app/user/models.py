@@ -23,6 +23,7 @@ class User(BaseModel):
     token = db.Column(db.String(255))
     image = db.Column(db.Text, nullable=True)
     is_active = db.Column(db.Boolean, default=False)
+    deleted = db.Column(db.Boolean, default=False)
 
     roles = db.relationship(
         "UserRole", cascade="save-update, merge, delete", lazy=True
@@ -35,7 +36,7 @@ class User(BaseModel):
     def __init__(
             self, id=None, first_name=None, middle_name=None,
             last_name=None, email=None, phone=None, password=None,
-            token=None, image=None, is_active=None):
+            token=None, image=None, is_active=None, deleted=None):
         self.id = id
         self.first_name = first_name
         self.middle_name = middle_name
@@ -46,6 +47,7 @@ class User(BaseModel):
         self.token = token
         self.image = image
         self.is_active = is_active
+        self.deleted = deleted
 
     def __repr__(self):
         return "<%r (%r)>" % (self.__class__.__name__, self.id)
@@ -69,9 +71,9 @@ class User(BaseModel):
         return cls.query.filter_by(phone=phone).first()
 
     @classmethod
-    def has_permission(cls, permission):
+    async def has_permission(cls, permission):
         user = cls.get_current_user()
-        permission_obj = Permission.get_by_name(permission)
+        permission_obj = await Permission.get_by_name(permission)
         if permission_obj and user:
             perm = UserPermission.filter_by(
                 permission_id=permission_obj.id, user_id=user.id)
