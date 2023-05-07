@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.env'))
+dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', '.env'))
 load_dotenv(dotenv_path)
 
 
@@ -10,7 +10,9 @@ class BaseConfig(object):
     """
     Callable Base Config which takes an object
     """
-    BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    BASE_DIR = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), '..', '..')
+    )
     SQLALCHEMY_DATABASE_URI = '{}'. \
         format(os.environ.get('DATABASE_URL'))
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -18,6 +20,13 @@ class BaseConfig(object):
     CSRF_SESSION_KEY = os.environ.get('CSRF_SESSION_KEY')
     SECRET_KEY = os.environ.get('SECRET_KEY')
     REDIS_URL = os.environ.get('REDIS_URL')
+    CACHED_QUERY = os.environ.get("CACHED_QUERY")
+    REDIS_EXPIRE = os.environ.get('REDIS_EXPIRE')
+    JWT_ACCESS_TOKEN_EXPIRES = 300
+    JWT_REFRESH_TOKEN_EXPIRES = 300
+    JWT_ERROR_MESSAGE_KEY = "message"
+    PAGINATE_BY = os.environ.get("PAGINATE_BY")
+    LOG_LEVEL = os.environ.get("LOG_LEVEL")
 
 
 class DevelopmentConfig(BaseConfig):
