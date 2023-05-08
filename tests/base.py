@@ -3,7 +3,7 @@ import os
 from unittest import mock
 from flask_migrate import Migrate, upgrade
 from app import app, db
-from manage import add_roles, add_demo_users, add_product_data
+from manage import add_roles, add_users, add_product_data
 from app.user import routes
 from app.auth import routes
 from app.role import routes
@@ -24,21 +24,21 @@ class Base:
         cls.client = app.test_client()
         cls.root_url = '/'
         cls.generate_jwt_url = '/auth/generate-jwt'
-        cls.user_url = '/users'
-        cls.permission_url = '/permissions'
-        cls.role_url = '/roles'
-        cls.category_url = '/categories'
-        cls.status_url = '/statuses'
+        cls.user_url = '/api/v1/users'
+        cls.permission_url = '/api/v1/permissions'
+        cls.role_url = '/api/v1/roles'
+        cls.category_url = '/api/v1/categories'
+        cls.status_url = '/api/v1/statuses'
         with app.app_context():
             Migrate(app, db)
             upgrade()
             db.create_all()
             add_roles()
-            add_demo_users()
+            add_users()
             add_product_data()
             # Generate token for authentication header
             req = cls.client.post(
-                "/account/generate/jwt/", 
+                "/api/v1/auth/generate-jwt",
                 json=dict(email="demo@mail.com", password="qwertytrewq")
             )
             cls.headers = {
