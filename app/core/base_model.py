@@ -284,7 +284,7 @@ class AbstractBaseModel(db.Model):
     @classmethod
     def get_current_user(cls):
         return cls.query \
-            .filter_by(email=get_jwt_identity()).first().id
+            .filter_by(email=get_jwt_identity()).first()
 
     @classmethod
     def filter_by(cls, **kwargs):
