@@ -29,6 +29,8 @@ from app.category import routes
 from app.product import routes
 from app.core.helpers import password_helper
 from app.status.models import Status
+from app.core.helpers import permissions
+from app.core.redis import redis
 
 
 @app.shell_context_processor
@@ -207,14 +209,25 @@ def create_order_data():
     pass
 
 
+@main.command('store-service-permissions-to-redis')
+def store_service_permissions_to_redis():
+    app_service_permissions = permissions.get_permissions_from_routes()
+    redis.hset_payload(
+        'permissions', 'app', json.dumps(app_service_permissions))
+    click.echo("Stored service permission to redis")
+
+
 def save_permissions(perm):
     for permission in perm["permissions"]:
         permission.update(path=perm["path"])
         p = Permission.get_by_name(permission.get("name"))
         if not p:
             last_permission_id = Permission.query.order_by(
-                desc(Permission.created_at)).first().id
-            _id = last_permission_id + 1
+                desc(Permission.created_at)).first()
+            if last_permission_id:
+                _id = last_permission_id.id + 1
+            else:
+                _id = 1
             permission.update(id=_id)
             try:
                 Permission(**permission).create()
@@ -222,6 +235,37 @@ def save_permissions(perm):
             except Exception as e:
                 db.session.rollback()
                 click.echo(str(e))
+
+
+def create_superuser_role_permissions():
+    role_id = Role.get_by_name('SUPER_USER')
+    page = 0
+    while True:
+        page += 1
+        permissions = Permission.query.paginate(
+            page=page, per_page=100, error_out=True)
+        for permission in permissions.items:
+            try:
+                RolePermission(
+                    role_id=role_id, permission_id=permission.id).create()
+                click.echo("Created role permission: {}".format(
+                    dict(role_id=role_id, permission_id=permission.id)))
+            except Exception as e:
+                db.session.rollback()
+                click.echo(str(e))
+        if not permissions:
+            break
+
+
+@main.command('store-service-permissions-to-db')
+def store_service_permissions_to_db():
+    app_service = json.loads(redis.hmget_payload('permissions', 'app'))
+    print(app_service)
+    for perm in app_service:
+        save_permissions(perm)
+    click.echo("Finished with app service permissions")
+
+    create_superuser_role_permissions()
 
 
 cli = click.CommandCollection(sources=[main])
