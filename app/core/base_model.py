@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import TypedDict, List, Dict
 
 import flask
 import sqlalchemy
@@ -15,7 +15,7 @@ from app.core.redis import redis
 
 class BaseModelResponse(TypedDict):
     count: int
-    results: dict
+    results: List[Dict]
     next: str
     previous: str
 
