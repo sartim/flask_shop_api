@@ -37,13 +37,13 @@ class AbstractBaseModel(db.Model):
             db.session.add(self)
             is_saved, msg = self.save()
             if not is_saved:
-                return False, msg
+                return None, msg
         except Exception as e:
             app.logger.exception(
                 "Error creating object - {}. {}"
                     .format(self.__name__, str(e))
             )
-            return False, str(e)
+            return None, str(e)
         else:
             return self, None
 
