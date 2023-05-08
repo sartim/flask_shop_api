@@ -62,16 +62,16 @@ def check_permission(fn=None):
                     not endpoint == "refresh_jwt_api":
                 permission = None
                 if request.method == "GET":
-                    permission = "CAN_ACCESS_VIEW_{}".format(
+                    permission = "CAN_GET_{}".format(
                         endpoint[:-4].upper())
                 if request.method == "POST":
-                    permission = "CAN_ACCESS_CREATE_{}".format(
+                    permission = "CAN_POST_{}".format(
                         endpoint[:-4].upper())
                 if request.method == "PUT":
-                    permission = "CAN_ACCESS_UPDATE_CREATE_{}".format(
+                    permission = "CAN_PUT_{}".format(
                         endpoint[:-4].upper())
                 if request.method == "DELETE":
-                    permission = "CAN_ACCESS_DELETE_{}".format(
+                    permission = "CAN_DELETE_{}".format(
                         endpoint[:-4].upper())
                 result = {"message": ResponseMessage.FORBIDDEN}
                 perm = User.has_permission(permission)
