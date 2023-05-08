@@ -13,13 +13,15 @@ class Role(BaseModel):
     )
     name = db.Column(db.String(255), unique=True, nullable=False)
     description = db.Column(db.Text)
+    deleted = db.Column(db.Boolean, default=False)
 
-    permissions = db.relationship("RolePermission", lazy=True)
+    permissions = db.relationship("RolePermission", lazy=False)
 
-    def __init__(self, id=None, name=None, description=None):
+    def __init__(self, id=None, name=None, description=None, deleted=None):
         self.id = id
         self.name = name
         self.description = description
+        self.deleted = deleted
 
     def __repr__(self):
         return "<%r (%r)>" % (self.__class__.__name__, self.name)
@@ -33,8 +35,8 @@ class RolePermission(AbstractBaseModel):
         UUID(as_uuid=True), db.ForeignKey('permission.id'), primary_key=True
     )
 
-    role = db.relationship('Role', lazy=True)
-    permission = db.relationship('Permission', lazy=True)
+    role = db.relationship('Role', lazy=False)
+    permission = db.relationship('Permission', lazy=False)
 
     def __init__(self, role_id=None, permission_id=None):
         self.role_id = role_id

@@ -26,11 +26,11 @@ class User(BaseModel):
     deleted = db.Column(db.Boolean, default=False)
 
     roles = db.relationship(
-        "UserRole", cascade="save-update, merge, delete", lazy=True
+        "UserRole", cascade="save-update, merge, delete", lazy=False
     )
     sessions = db.relationship(
         "UserAuthenticated", backref='user_sessions',
-        cascade="save-update, merge, ""delete", lazy=True
+        cascade="save-update, merge, ""delete", lazy=False
     )
 
     def __init__(
