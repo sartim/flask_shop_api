@@ -10,7 +10,7 @@ from flask import current_app
 from flask.cli import FlaskGroup
 from sqlalchemy import desc
 from app.core.helpers.socket_utils import *
-# from app.core.helpers.jwt_handlers import *
+from app.core.helpers.jwt_handlers import *
 from app.core.helpers import utils, validator
 from app.core import base_model
 from app.permission.models import Permission
@@ -189,7 +189,8 @@ def create_superuser():
                 is_active=True)
             db.session.add(user)
             db.session.commit()
-            user_role = UserRole(user_id=user.id, role_id=1)
+            role = Role.get_by_name('SUPERUSER')
+            user_role = UserRole(user_id=user.id, role_id=role.id)
             db.session.add(user_role)
             db.session.commit()
             click.echo("Successfully created admin account \n")
@@ -222,13 +223,6 @@ def save_permissions(perm):
         permission.update(path=perm["path"])
         p = Permission.get_by_name(permission.get("name"))
         if not p:
-            last_permission_id = Permission.query.order_by(
-                desc(Permission.created_at)).first()
-            if last_permission_id:
-                _id = last_permission_id.id + 1
-            else:
-                _id = 1
-            permission.update(id=_id)
             try:
                 Permission(**permission).create()
                 click.echo("Created permission: {}".format(permission))
@@ -238,7 +232,7 @@ def save_permissions(perm):
 
 
 def create_superuser_role_permissions():
-    role_id = Role.get_by_name('SUPER_USER')
+    role = Role.get_by_name('SUPERUSER')
     page = 0
     while True:
         page += 1
@@ -247,9 +241,9 @@ def create_superuser_role_permissions():
         for permission in permissions.items:
             try:
                 RolePermission(
-                    role_id=role_id, permission_id=permission.id).create()
+                    role_id=role.id, permission_id=permission.id).create()
                 click.echo("Created role permission: {}".format(
-                    dict(role_id=role_id, permission_id=permission.id)))
+                    dict(role_id=role.id, permission_id=permission.id)))
             except Exception as e:
                 db.session.rollback()
                 click.echo(str(e))
