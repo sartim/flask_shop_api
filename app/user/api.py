@@ -18,7 +18,7 @@ from app.user.schemas import UserSchema, user_args_schema
 class UserApi(BaseResource):
     decorators = [cross_origin(), jwt_required()]
     model = User
-    schema = UserSchema()
+    schema = UserSchema
     request_args = user_args_schema
 
     @content_type(["application/json"])
