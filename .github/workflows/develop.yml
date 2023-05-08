@@ -40,4 +40,11 @@ jobs:
       env:
           ENV: ${{ secrets.ENV }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          PAGINATE_BY: ${{ secrets.PAGINATE_BY }}
+          REDIS_EXPIRE: ${{ secrets.REDIS_EXPIRE }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          APP_EMAIL: ${{ secrets.APP_EMAIL }}
+          APP_EMAIL_PASSWORD: ${{ secrets.APP_EMAIL_PASSWORD }}
           LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
