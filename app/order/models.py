@@ -46,7 +46,7 @@ class OrderItem(db.Model):
         onupdate=db.func.current_timestamp()
     )
 
-    order = db.relationship('Order', lazy=True)
+    order = db.relationship('Order', lazy=True, overlaps="items")
     product = db.relationship('Product', lazy=True)
 
     def __init__(self, order_id, product_id, price, quantity):

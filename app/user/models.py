@@ -179,7 +179,7 @@ class UserRole(db.Model):
         onupdate=db.func.current_timestamp()
     )
 
-    user = db.relationship("User", lazy=True)
+    user = db.relationship("User", lazy=True, overlaps="roles")
     role = db.relationship("Role", lazy=True)
 
     def __init__(self, user_id=None, role_id=None):

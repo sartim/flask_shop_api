@@ -35,7 +35,7 @@ class RolePermission(AbstractBaseModel):
         UUID(as_uuid=True), db.ForeignKey('permission.id'), primary_key=True
     )
 
-    role = db.relationship('Role', lazy=False)
+    role = db.relationship('Role', lazy=False, overlaps="permissions")
     permission = db.relationship('Permission', lazy=False)
 
     def __init__(self, role_id=None, permission_id=None):
