@@ -13,12 +13,16 @@ class Permission(BaseModel):
     )
     name = db.Column(db.String(255), unique=True)
     description = db.Column(db.Text)
+    path = db.Column(db.String(255), nullable=True)
     deleted = db.Column(db.Boolean, default=False)
 
-    def __init__(self, id=None, name=None, description=None, deleted=None):
+    def __init__(
+            self, id=None, name=None, description=None,
+            path=None, deleted=None):
         self.id = id
         self.name = name
         self.description = description
+        self.path = path
         self.deleted = deleted
 
     def __repr__(self):
