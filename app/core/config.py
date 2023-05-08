@@ -50,6 +50,4 @@ class TestingConfig(BaseConfig):
     """
     DEBUG = True
     BCRYPT_LOG_ROUNDS = 4
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BaseConfig.BASE_DIR, 'test.sqlite')
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
