@@ -15,7 +15,7 @@ class PermissionSchema(ma.SQLAlchemySchema, BaseSchema):
 
 
 permission_args_schema = {
-    "id": fields.Int(),
+    "id": fields.Str(),
     "name": fields.Str(),
     "description": fields.Str(),
     "path": fields.Str(),

@@ -7,8 +7,8 @@ from app.role.models import Role, RolePermission
 
 
 class RolePermissionSchema(ma.SQLAlchemySchema, AbstractBaseSchema):
-    role_id = ma.Int(required=True)
-    permission_id = ma.Int(required=True)
+    role_id = ma.Str(required=True)
+    permission_id = ma.Str(required=True)
 
     permission = ma.Nested(
         PermissionSchema(only=('name', 'description',)))
@@ -27,7 +27,7 @@ class RoleSchema(ma.SQLAlchemySchema, BaseSchema):
 
 
 role_args_schema = {
-    "id": fields.Int(),
+    "id": fields.Str(),
     "name": fields.Str(),
     "description": fields.Str(),
     "deleted": fields.Boolean()
