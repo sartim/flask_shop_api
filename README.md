@@ -3,7 +3,7 @@
 [![Open Source Love](https://img.shields.io/badge/language-python-green.svg)](https://github.com/sartim/flask_shop_api)
 [![Build Status](https://travis-ci.com/sartim/flask_shop_api.svg?branch=master)](https://travis-ci.com/sartim/flask_shop_api)
 
-REST API which exposes endpoints both for an online shop and a CMS admin. It's developed using flask framework which runs as a socketio server. The database configuration for the app relies on PostgreSQL. It also handles API caching to redis to reduce load on database.
+REST API which exposes endpoints both for an online shop and a CMS admin. It's developed using flask framework which runs as a socketio server. The database configuration for the app relies on PostgreSQL. API caching to redis has been handled to reduce load on database.
 
 ## Setup
 
