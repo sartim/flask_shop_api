@@ -1,3 +1,5 @@
+from typing import TypedDict
+
 import flask
 import sqlalchemy
 
@@ -9,6 +11,13 @@ from app import db, app
 from app.core.constants import ResponseMessage
 from app.core.helpers import serializer
 from app.core.redis import redis
+
+
+class BaseModelResponse(TypedDict):
+    count: int
+    results: dict
+    next: str
+    previous: str
 
 
 class AbstractBaseModel(db.Model):
@@ -135,10 +144,12 @@ class AbstractBaseModel(db.Model):
                 domain, path, _id, paginated_data["prev_page"]
             )
 
+        data: BaseModelResponse
+        prev_url = prev_url if paginated_data["prev_page"] else ""
         if paginated_data["has_next"]:
             data = dict(
                 count=paginated_data["total"], results=results, next=next_url,
-                previous=prev_url if paginated_data["prev_page"] else ""
+                previous=prev_url
             )
         else:
             data = dict(
@@ -273,7 +284,7 @@ class AbstractBaseModel(db.Model):
     @classmethod
     def get_current_user(cls):
         return cls.query \
-            .filter_by(email=get_jwt_identity()).first()
+            .filter_by(email=get_jwt_identity()).first().id
 
     @classmethod
     def filter_by(cls, **kwargs):
