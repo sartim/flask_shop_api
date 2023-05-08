@@ -2,6 +2,8 @@ import os
 
 from unittest import mock
 from flask_migrate import Migrate, upgrade
+from sqlalchemy import text
+
 from app import app, db
 from manage import add_roles, add_users, add_product_data
 from app.user import routes
@@ -31,6 +33,9 @@ class Base:
         cls.status_url = '/api/v1/statuses'
         with app.app_context():
             Migrate(app, db)
+            db.session.execute(
+                text('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'))
+            db.session.commit()
             upgrade()
             db.create_all()
             add_roles()
