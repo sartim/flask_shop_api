@@ -1,3 +1,5 @@
+from typing import TypedDict
+
 from flask import jsonify, request
 from flask.views import MethodView
 from flask_cors import cross_origin
@@ -8,7 +10,6 @@ from app.core.constants import ResponseMessage
 from app.core.helpers.decorators import (
     content_type, validator, check_permission)
 from app.core.redis import redis
-from app.user.models import User
 
 
 class BaseResource(MethodView):
