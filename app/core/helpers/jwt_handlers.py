@@ -18,12 +18,6 @@ def custom_user_loader_error(identity):
     return jsonify(ret), 404
 
 
-@jwt.user_lookup_loader
-def user_lookup_callback(_jwt_header, jwt_data):
-    identity = jwt_data["sub"]
-    return User.query.filter_by(id=identity).one_or_none()
-
-
 @jwt.expired_token_loader
 def expired_token_callback(header, data):
     token_type = data['type']
