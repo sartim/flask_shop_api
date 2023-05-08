@@ -52,9 +52,9 @@ class User(BaseModel):
     def __repr__(self):
         return "<%r (%r)>" % (self.__class__.__name__, self.id)
 
-    async def get_logged_in_id(self):
+    def get_logged_in_id(self):
         email = get_jwt_identity()
-        user = await self.get_user_by_email(email)
+        user = self.get_user_by_email(email)
         if user:
             return str(user.id)
         return None
@@ -63,17 +63,17 @@ class User(BaseModel):
         return "{} {}".format(self.first_name, self.last_name)
 
     @classmethod
-    async def get_user_by_email(cls, email):
+    def get_user_by_email(cls, email):
         return cls.query.filter_by(email=email).first()
 
     @classmethod
-    async def get_user_by_phone(cls, phone):
+    def get_user_by_phone(cls, phone):
         return cls.query.filter_by(phone=phone).first()
 
     @classmethod
-    async def has_permission(cls, permission):
+    def has_permission(cls, permission):
         user = cls.get_current_user()
-        permission_obj = await Permission.get_by_name(permission)
+        permission_obj = Permission.get_by_name(permission)
         if permission_obj and user:
             perm = UserPermission.filter_by(
                 permission_id=permission_obj.id, user_id=user.id)
