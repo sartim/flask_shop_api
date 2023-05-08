@@ -33,8 +33,7 @@ class OrderItem(db.Model):
     __tablename__ = 'order_item'
 
     order_id = db.Column(
-        db.Integer, db.ForeignKey('order.id'), primary_key=True
-)
+        db.Integer, db.ForeignKey('order.id'), primary_key=True)
     product_id = db.Column(
         UUID(as_uuid=True), db.ForeignKey('product.id'), primary_key=True)
     price = db.Column(db.DECIMAL(precision=10, scale=2))
