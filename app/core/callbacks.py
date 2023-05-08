@@ -34,11 +34,3 @@ def handle_error(err):
         return jsonify(messages), err.code, headers
     else:
         return jsonify(messages), err.code
-
-
-@jwt.expired_token_loader
-def expired_token_callback(header, data):
-    token_type = data['type']
-    return jsonify({
-        'message': 'The {} token has expired'.format(token_type)
-    }), 401
