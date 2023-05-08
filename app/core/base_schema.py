@@ -8,7 +8,7 @@ class AbstractBaseSchema:
 
 
 class BaseSchema(AbstractBaseSchema):
-    id = fields = fields.Int()
+    id = fields.Str()
 
 
 base_args_schema = {
