@@ -79,8 +79,9 @@ def add_users():
                 item['password'])
             obj, msg = User(**item).create()
             roles = [Role.get_by_name(role) for role in roles]
-            obj.roles = [UserRole(obj.id, role.id) for role in roles]
-            obj.save()
+            if obj:
+                obj.roles = [UserRole(obj.id, role.id) for role in roles]
+                obj.save()
 
         objects = [process(item) for item in items]
         click.echo("Finished adding users")
