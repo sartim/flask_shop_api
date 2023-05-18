@@ -4,7 +4,7 @@ from app import app, jwt
 
 @app.route("/")
 def root_api():
-    return "", 200
+    return "Welcome", 200
 
 
 @app.route("/server-status")
