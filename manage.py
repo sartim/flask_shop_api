@@ -4,6 +4,8 @@ import sys
 import csv
 import os
 import random
+import uuid
+
 import click
 
 from flask import current_app
@@ -112,6 +114,7 @@ def add_product_data():
             category = row[22]
             items = random.randint(5, 50)
             product = Product.get_or_create_by_name(name)
+            product.id = str(uuid.uuid4())
             product.price = price
             product.brand = brand
             product.image_urls = image_urls
