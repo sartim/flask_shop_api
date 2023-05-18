@@ -21,7 +21,8 @@ jobs:
     - name: Setup CI/CD Server
       run: |
         sudo apt-get update &&
-        sudo apt-get install -y redis-server
+        sudo apt-get install -y redis-server &&
+        sudo apt-get install -y awscli
     - name: Set up Python 3.8
       uses: actions/setup-python@v3
       with:
@@ -58,9 +59,13 @@ jobs:
     strategy:
       max-parallel: 1
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
-      - name: Deploy to prod
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+    - name: Deploy to prod
+        # run: aws deploy create-deployment --region ${{ secrets.AWS_REGION }} --application-name flask-shop-api --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name flask-shop-api-prod-dg --description "Github deployment for commit ${GITHUB_SHA}" --github-location repository=sartim/flask_shop_api,commitId=${GITHUB_SHA}
         run: |
-          echo "Deploy to prod step"
+          echo "Deploy to prod"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
