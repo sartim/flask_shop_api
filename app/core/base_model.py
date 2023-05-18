@@ -66,6 +66,7 @@ class AbstractBaseModel(db.Model):
             app.logger.debug('Successfully committed {} instance'
                              .format(cls.__name__))
         except sqlalchemy.exc.DBAPIError as e:
+            cls.revert()
             msg = "Error code {}, {}".format(
                 e.orig.pgcode, str(e.orig)
             )
@@ -81,7 +82,7 @@ class AbstractBaseModel(db.Model):
             )
             return False, str(e)
         else:
-            return cls, None
+            return True, None
 
     def delete(self):
         try:
