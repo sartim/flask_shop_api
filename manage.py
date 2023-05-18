@@ -113,16 +113,17 @@ def add_product_data():
             name = row[21]
             category = row[22]
             items = random.randint(5, 50)
-            product = Product.get_or_create_by_name(name)
-            product.id = str(uuid.uuid4())
-            product.price = price
-            product.brand = brand
-            product.image_urls = image_urls
-            category = Category.get_or_create_by_name(category)
-            product.category_id = category.id
-            product.items = items
-            product.save()
-            click.echo("Successfully finished adding data ")
+            product = Product(
+                id=str(uuid.uuid4()), name=name, price=price, brand=brand,
+                image_urls=image_urls
+            )
+            category = Category(id=str(uuid.uuid4()), name=category)
+            is_saved, _ = category.save()
+            if is_saved:
+                product.category_id = category.id
+                product.items = items
+                product.save()
+    click.echo("Successfully finished loading data")
 
 
 @main.command('create',
@@ -138,7 +139,7 @@ def create():
         add_roles()
         add_users()
         add_order_statuses()
-        # add_product_data()
+        add_product_data()
         click.echo("Finished creating tables!!! \n")
     process()
 
