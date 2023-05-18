@@ -1,0 +1,18 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ubuntu/flask_shop_api
+hooks:
+  BeforeInstall:
+    - location: aws-codedeploy-helpers/BeforeInstall.sh
+      timeout: 1000
+      runas: root
+  AfterInstall:
+    - location: aws-codedeploy-helpers/AfterInstall.sh
+      timeout: 1000
+      runas: root
+  ApplicationStart:
+    - location: aws-codedeploy-helpers/ApplicationStart.sh
+      timeout: 1000
+      runas: root
