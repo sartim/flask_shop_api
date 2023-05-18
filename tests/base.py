@@ -25,7 +25,7 @@ class Base:
             assert os.environ.get("ENV") == "TEST"
         cls.client = app.test_client()
         cls.root_url = '/'
-        cls.generate_jwt_url = '/auth/generate-jwt'
+        cls.generate_jwt_url = '/api/v1/auth/generate-jwt'
         cls.user_url = '/api/v1/users'
         cls.permission_url = '/api/v1/permissions'
         cls.role_url = '/api/v1/roles'
@@ -44,7 +44,7 @@ class Base:
             # Generate token for authentication header
             req = cls.client.post(
                 "/api/v1/auth/generate-jwt",
-                json=dict(email="demo@mail.com", password="qwertytrewq")
+                json=dict(email="admin@mail.com", password="admin_pass")
             )
             cls.headers = {
                 "Authorization": "Bearer {}".format(req.json["access_token"])
@@ -52,4 +52,5 @@ class Base:
 
     @classmethod
     def teardown_class(cls):
-        db.drop_all()
+        with app.app_context():
+            db.drop_all()
