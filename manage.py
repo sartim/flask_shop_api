@@ -80,9 +80,9 @@ def add_users():
             item['password'] = password_helper.generate_password_hash(
                 item['password'])
             obj, msg = User(**item).create()
-            roles = [Role.get_by_name(role) for role in roles]
+            # roles = [Role.get_by_name(role) for role in roles]
             if obj:
-                obj.roles = [UserRole(obj.id, role.id) for role in roles]
+                # obj.roles = [UserRole(obj.id, role.id) for role in roles]
                 obj.save()
 
         objects = [process(item) for item in items]
@@ -239,31 +239,52 @@ def save_permissions(perm):
 def create_superuser_role_permissions():
     role = Role.get_by_name('SUPERUSER')
     page = 0
-    while True:
-        page += 1
-        permissions = Permission.query.paginate(
-            page=page, per_page=100, error_out=True)
-        for permission in permissions.items:
-            try:
-                RolePermission(
-                    role_id=role.id, permission_id=permission.id).create()
-                click.echo("Created role permission: {}".format(
-                    dict(role_id=role.id, permission_id=permission.id)))
-            except Exception as e:
-                db.session.rollback()
-                click.echo(str(e))
-        if not permissions:
-            break
+    try:
+        while True:
+            page += 1
+            _permissions = Permission.query.paginate(
+                page=page, per_page=100, error_out=True)
+            for permission in _permissions.items:
+                try:
+                    RolePermission(
+                        role_id=role.id, permission_id=permission.id).create()
+                    click.echo("Created role permission: {}".format(
+                        dict(role_id=role.id, permission_id=permission.id)))
+                except Exception as e:
+                    db.session.rollback()
+                    click.echo(str(e))
+            if not _permissions:
+                break
+    except Exception as e:
+        app.logger.exception(str(e))
 
 
-@main.command('store-service-permissions-to-db')
-def store_service_permissions_to_db():
+def create_service_permissions_on_redis():
+    flask_shop_api_permissions = permissions.get_permissions_from_routes()
+    redis.hset_payload(
+        'permissions', 'app', json.dumps(flask_shop_api_permissions))
+
+
+@main.command('store_service_permissions_to_redis')
+def store_service_permissions_to_redis():
+    create_service_permissions_on_redis()
+
+
+@main.command('assign_all_permissions_to_superuser')
+def assign_all_permissions_to_superuser():
+    create_superuser_role_permissions()
+
+
+def create_service_permissions_to_db():
     app_service = json.loads(redis.hmget_payload('permissions', 'app'))
-    print(app_service)
     for perm in app_service:
         save_permissions(perm)
     click.echo("Finished with app service permissions")
 
+
+@main.command('store-service-permissions-to-db')
+def store_service_permissions_to_db():
+    create_service_permissions_to_db()
     create_superuser_role_permissions()
 
 
