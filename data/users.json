@@ -9,7 +9,7 @@
     "token": null,
     "image": null,
     "is_active": true,
-    "roles": ["ADMIN"]
+    "roles": ["SUPERUSERs"]
   },
   {
      "first_name": "Test1",
