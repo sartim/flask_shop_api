@@ -5,7 +5,9 @@ from flask_migrate import Migrate, upgrade
 from sqlalchemy import text
 
 from app import app, db
-from manage import add_roles, add_users, add_product_data
+from manage import (
+    add_roles, add_users, add_product_data, create_superuser_role_permissions,
+    create_service_permissions_on_redis, create_service_permissions_to_db)
 from app.user import routes
 from app.auth import routes
 from app.role import routes
@@ -41,6 +43,9 @@ class Base:
             add_roles()
             add_users()
             add_product_data()
+            create_service_permissions_on_redis()
+            create_service_permissions_to_db()
+            create_superuser_role_permissions()
             # Generate token for authentication header
             req = cls.client.post(
                 "/api/v1/auth/generate-jwt",
