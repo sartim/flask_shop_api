@@ -1,4 +1,4 @@
-certifi==2022.6.15
+certifi==2023.7.22
 bcrypt==4.0.1
 boto3==1.18.12
 coverage==5.5
