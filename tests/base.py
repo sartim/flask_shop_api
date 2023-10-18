@@ -8,6 +8,8 @@ from app import app, db
 from manage import (
     add_roles, add_users, add_product_data, create_superuser_role_permissions,
     create_service_permissions_on_redis, create_service_permissions_to_db)
+from app.role.models import Role
+from app.user.models import UserRole
 from app.user import routes
 from app.auth import routes
 from app.role import routes
@@ -54,6 +56,11 @@ class Base:
             cls.headers = {
                 "Authorization": "Bearer {}".format(req.json["access_token"])
             }
+            cls.user_id = req.json["user"]["id"]
+            role = Role.get_by_name('SUPERUSER')
+            user_role = UserRole(user_id=cls.user_id, role_id=role.id)
+            db.session.add(user_role)
+            db.session.commit()
 
     @classmethod
     def teardown_class(cls):

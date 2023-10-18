@@ -1,8 +1,8 @@
 """Init tables
 
-Revision ID: 3cfa0214d5b7
+Revision ID: 7397d13e17f2
 Revises: 
-Create Date: 2023-05-03 17:14:22.400420
+Create Date: 2023-10-18 13:05:44.406805
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '3cfa0214d5b7'
+revision = '7397d13e17f2'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,6 +22,7 @@ def upgrade():
     sa.Column('id', sa.UUID(), server_default=sa.text('uuid_generate_v4()'), nullable=False),
     sa.Column('name', sa.String(length=255), nullable=True),
     sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('deleted', sa.Boolean(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
     sa.PrimaryKeyConstraint('id')
@@ -30,6 +31,7 @@ def upgrade():
     sa.Column('id', sa.UUID(), server_default=sa.text('uuid_generate_v4()'), nullable=False),
     sa.Column('name', sa.String(length=255), nullable=True),
     sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('path', sa.String(length=255), nullable=True),
     sa.Column('deleted', sa.Boolean(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
@@ -40,6 +42,7 @@ def upgrade():
     sa.Column('id', sa.UUID(), server_default=sa.text('uuid_generate_v4()'), nullable=False),
     sa.Column('name', sa.String(length=255), nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('deleted', sa.Boolean(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
     sa.PrimaryKeyConstraint('id'),
@@ -48,6 +51,8 @@ def upgrade():
     op.create_table('status',
     sa.Column('id', sa.UUID(), server_default=sa.text('uuid_generate_v4()'), nullable=False),
     sa.Column('name', sa.String(length=255), nullable=True),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('deleted', sa.Boolean(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
     sa.PrimaryKeyConstraint('id'),
@@ -64,6 +69,7 @@ def upgrade():
     sa.Column('token', sa.String(length=255), nullable=True),
     sa.Column('image', sa.Text(), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=True),
+    sa.Column('deleted', sa.Boolean(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
     sa.PrimaryKeyConstraint('id'),
@@ -74,6 +80,7 @@ def upgrade():
     sa.Column('user_id', sa.UUID(), nullable=True),
     sa.Column('status_id', sa.UUID(), nullable=True),
     sa.Column('order_total', sa.DECIMAL(precision=10, scale=2), nullable=True),
+    sa.Column('deleted', sa.Boolean(), nullable=True),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
@@ -146,6 +153,7 @@ def upgrade():
     sa.Column('user_id', sa.UUID(), nullable=True),
     sa.Column('rating', sa.Integer(), nullable=True),
     sa.Column('review', sa.Text(), nullable=True),
+    sa.Column('deleted', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['product_id'], ['product.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')

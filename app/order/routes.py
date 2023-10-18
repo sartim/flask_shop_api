@@ -7,7 +7,7 @@ register_api(
     OrderApi,
     'order_api',
     '/api/v1/orders',
-    pk='order_id'
+    pk='_id'
 )
 register_basic_api(
     OrderTotalSumTodayApi,
