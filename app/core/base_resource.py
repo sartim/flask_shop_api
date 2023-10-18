@@ -124,8 +124,7 @@ class BaseResource(MethodView):
 
     @staticmethod
     def delete_cached_query():
-        # redis.delete(app.config.get("CACHED_QUERY"))
-        pass
+        redis.delete(app.config.get("CACHED_QUERY"))
 
 
 class ChildBaseResource(BaseResource):
