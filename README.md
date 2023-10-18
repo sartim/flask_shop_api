@@ -1,8 +1,8 @@
 # Flask Shop API
 
-[![Open Source Love](https://img.shields.io/badge/language-python-green.svg)](https://github.com/sartim/flask_shop_api)
-[![Build Status](https://travis-ci.com/sartim/flask_shop_api.svg?branch=master)](https://travis-ci.com/sartim/flask_shop_api)
-
+[![Language](https://img.shields.io/badge/language-python-green.svg)](https://github.com/sartim/flask_shop_api)
+![build](https://github.com/sartim/flask_shop_api/workflows/build/badge.svg)
+````````
 REST API which exposes endpoints both for an online shop and a CMS admin. It's developed using flask framework which runs as a socketio server.
 
 ##Features
