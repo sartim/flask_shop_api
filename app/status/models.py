@@ -13,11 +13,13 @@ class Status(BaseModel):
     )
     name = db.Column(db.String(255), unique=True)
     description = db.Column(db.Text)
+    deleted = db.Column(db.Boolean, default=False)
 
-    def __init__(self, id=None, name=None, description=None):
+    def __init__(self, id=None, name=None, description=None, deleted=None):
         self.id = id
         self.name = name
         self.description = description
+        self.deleted = deleted
 
     def __repr__(self):
         return "<%r (%r)>" % (self.__class__.__name__, self.name)

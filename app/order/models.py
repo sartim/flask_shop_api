@@ -19,11 +19,13 @@ class Order(BaseModel):
     items = db.relationship('OrderItem',
                             cascade="save-update, merge, delete",
                             lazy=True)
+    deleted = db.Column(db.Boolean, default=False)
 
-    def __init__(self, id=None, user_id=None, status_id=None):
+    def __init__(self, id=None, user_id=None, status_id=None, deleted=None):
         self.id = id
         self.user_id = user_id
         self.status_id = status_id
+        self.deleted = deleted
 
     def __repr__(self):
         return "<%r (%r)" % (self.__class__.__name__, self.id)
