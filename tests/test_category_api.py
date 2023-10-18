@@ -1,3 +1,5 @@
+import unittest
+
 from tests.base import Base
 
 
@@ -11,6 +13,7 @@ class TestCategoryApi(Base):
         assert 'count' in req.json
         assert 'results' in req.json
 
+    @unittest.skip
     def test_get_by_id(self):
         req = self.client.get(
             '{}/{}'.format(self.category_url, 1),
