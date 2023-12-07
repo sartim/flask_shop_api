@@ -83,4 +83,26 @@ First setup the .env for test environment then run the following command from pr
 
     python manage.py --help
 
-_(Optional)Install Ipython to get interactive shell using Ipython for the app_    
+_(Optional)Install Ipython to get interactive shell using Ipython for the app_
+
+
+**Demo URL**
+
+`https://flask-shop-api-git-develop-sartims-projects.vercel.app`
+
+###### Login Credentials
+
+username: `demo@mail.com`
+
+password: `demo_pass`
+
+
+###### Routes
+
+* /api/v1/auth/generate-jwt
+* /api/v1/users
+* /api/v1/categories
+* /api/v1/products
+* /api/v1/statuses
+* /api/v1/orders
+* /api/v1/reviews

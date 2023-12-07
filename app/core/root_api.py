@@ -1,5 +1,5 @@
 from flask_cors import cross_origin
-from app import app
+from app.core.app import app
 
 
 @app.route('/')

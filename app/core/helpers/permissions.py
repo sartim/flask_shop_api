@@ -1,4 +1,4 @@
-from app import app
+from app.core.app import app
 
 
 def clean_methods(methods):

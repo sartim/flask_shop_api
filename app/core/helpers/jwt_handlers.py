@@ -1,5 +1,5 @@
 from flask import jsonify
-from app import jwt
+from app.core.app import jwt
 from app.user.models import User
 
 

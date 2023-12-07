@@ -6,7 +6,7 @@ from flask import request, make_response
 from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
 from sqlalchemy import desc
-from app import app
+from app.core.app import app
 from app.core.base_resource import BaseResource
 from app.core.helpers.decorators import content_type, validator
 from app.role.models import Role

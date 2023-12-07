@@ -5,7 +5,7 @@ from flask.views import MethodView
 from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
 from marshmallow import ValidationError
-from app import app, parser
+from app.core.app import app, parser
 from app.core.constants import ResponseMessage
 from app.core.helpers.decorators import (
     content_type, validator, check_permission)

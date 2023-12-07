@@ -7,7 +7,7 @@ from datetime import date, datetime
 from flask import request
 from flask_jwt_extended import get_jwt_identity
 from sqlalchemy import desc, func, extract, asc
-from app import db, app
+from app.core.app import db, app
 from app.core.constants import ResponseMessage
 from app.core.helpers import serializer
 from app.core.redis import redis

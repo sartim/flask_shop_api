@@ -1,6 +1,6 @@
 from flask_jwt_extended import get_jwt_identity
 from app.core.base_model import BaseModel, AbstractBaseModel
-from app import db, app
+from app.core.app import db, app
 from sqlalchemy import text, desc, asc
 from sqlalchemy.dialects.postgresql import UUID
 from app.permission.models import Permission

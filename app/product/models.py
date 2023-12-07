@@ -2,7 +2,7 @@ from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import UUID
 from app.core.mixins import SearchableMixin
 from app.core.base_model import BaseModel
-from app import db
+from app.core.app import db
 from app.category.models import Category
 from app.review.models import Review
 

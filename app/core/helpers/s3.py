@@ -1,7 +1,7 @@
 import os
 import boto3
 
-from app import app
+from app.core.app import app
 
 
 def upload_file(file, bucket_name, acl="public-read"):

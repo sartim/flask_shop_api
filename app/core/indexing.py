@@ -1,5 +1,5 @@
 from flask import current_app
-from app import app
+from app.core.app import app
 
 
 def add_to_index(index, model):

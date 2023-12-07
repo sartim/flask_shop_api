@@ -1,6 +1,6 @@
 from marshmallow.schema import BaseSchema
 
-from app import ma
+from app.core.app import ma
 from app.product.models import Product
 
 

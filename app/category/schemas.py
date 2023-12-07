@@ -1,6 +1,6 @@
 from marshmallow import fields
 from marshmallow.schema import BaseSchema
-from app import ma
+from app.core.app import ma
 from app.category.models import Category
 from app.core.base_schema import base_args_schema
 

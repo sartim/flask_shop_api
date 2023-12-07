@@ -1,4 +1,4 @@
-from app import ma
+from app.core.app import ma
 from webargs import fields
 from app.core.base_schema import BaseSchema, base_args_schema
 from app.permission.models import Permission
