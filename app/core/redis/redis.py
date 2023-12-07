@@ -5,14 +5,17 @@ import redis
 from app.core.app import app
 
 redis_url = app.config.get("REDIS_URL")
-redis_url_string = redis_url.split("//")[1]
-split_string = redis_url_string.split(":")
-host = split_string[0]
-port = int(split_string[1])
-cache = redis.from_url(url=redis_url, db=0)
-if not cache.ping():
-    app.logger.exception('Redis ping failed for connection')
-    cache = None
+cache = None
+
+if redis_url:
+    redis_url_string = redis_url.split("//")[1]
+    split_string = redis_url_string.split(":")
+    host = split_string[0]
+    port = int(split_string[1])
+    cache = redis.from_url(url=redis_url, db=0)
+    if not cache.ping():
+        app.logger.exception('Redis ping failed for connection')
+        cache = None
 
 
 def hset_payload(name, key, payload):
