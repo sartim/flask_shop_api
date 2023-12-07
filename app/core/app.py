@@ -45,7 +45,22 @@ CORS(app, supports_credentials=True)
 socketio = SocketIO(app)
 
 from app.core.callbacks import *
-
+from app.auth.routes import auth_api
+from app.category.routes import category_api
+from app.order.routes import order_api
+from app.permission.routes import permission_api
+from app.product.routes import product_api
+from app.role.routes import role_api
+from app.status.routes import status_api
+from app.user.routes import user_api
+app.register_blueprint(auth_api)
+app.register_blueprint(category_api)
+app.register_blueprint(order_api)
+app.register_blueprint(permission_api)
+app.register_blueprint(product_api)
+app.register_blueprint(role_api)
+app.register_blueprint(status_api)
+app.register_blueprint(user_api)
 
 # Setup SMTPHandler for email AUTH
 mail_handler = SMTPHandler(
