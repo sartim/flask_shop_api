@@ -1,6 +1,6 @@
 import unittest
 
-from app import app
+from app.core.app import app
 from app.core.helpers import utils
 from app.core.constants import ResponseMessage
 from manage import add_order_statuses
