@@ -4,7 +4,7 @@ from unittest import mock
 from flask_migrate import Migrate, upgrade
 from sqlalchemy import text
 
-from app import app, db
+from app.core.app import app, db
 from manage import (
     add_roles, add_users, add_product_data, create_superuser_role_permissions,
     create_service_permissions_on_redis, create_service_permissions_to_db)
