@@ -9,7 +9,7 @@
     "token": null,
     "image": null,
     "is_active": true,
-    "roles": ["SUPERUSERs"]
+    "roles": ["SUPERUSER"]
   },
   {
      "first_name": "Test1",
@@ -41,7 +41,19 @@
     "last_name": "Test3",
     "email": "test3@mail.com",
     "phone": "254711495832",
-    "password": "collector_pass",
+    "password": "test_pass",
+    "token": null,
+    "image": null,
+    "is_active": true,
+    "roles": ["ADMIN"]
+  },
+  {
+    "first_name": "Test3",
+    "middle_name": null,
+    "last_name": "Test3",
+    "email": "demo@mail.com",
+    "phone": "211123452323",
+    "password": "demo_pass",
     "token": null,
     "image": null,
     "is_active": true,
