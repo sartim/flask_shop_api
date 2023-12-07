@@ -3,7 +3,7 @@ from flask import Blueprint
 from app.order.api import (
     OrderApi, OrderTotalSumTodayApi, OrderCountApi, OrderItemApi
 )
-from core.helpers.register_helper import register_api, register_basic_api
+from app.core.helpers.register_helper import register_api, register_basic_api
 
 order_api = Blueprint('order_api', __name__)
 
