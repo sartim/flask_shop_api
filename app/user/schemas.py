@@ -1,6 +1,6 @@
 from marshmallow import fields
 from webargs import fields as fd
-from app import ma
+from app.core.app import ma
 from app.core.base_schema import AbstractBaseSchema, BaseSchema, \
     base_args_schema
 from app.permission.schemas import PermissionSchema

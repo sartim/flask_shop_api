@@ -3,7 +3,7 @@ import flask
 
 from flask_jwt_extended import current_user
 from flask_socketio import emit, join_room, leave_room, send
-from app import app, socketio, db
+from app.core.app import app, socketio, db
 from app.user.models import User
 
 

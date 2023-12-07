@@ -13,6 +13,7 @@ from flask.cli import FlaskGroup
 from sqlalchemy import desc
 from app.core.helpers.socket_utils import *
 from app.core.helpers.jwt_handlers import *
+from core.app import app, db
 from app.core.helpers import utils, validator
 from app.core import base_model
 from app.permission.models import Permission

@@ -1,4 +1,4 @@
-from app import ma
+from app.core.app import ma
 from webargs import fields
 from app.core.base_schema import (
     AbstractBaseSchema, BaseSchema, base_args_schema)

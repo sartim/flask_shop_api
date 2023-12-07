@@ -1,6 +1,6 @@
 from marshmallow.schema import BaseSchema
 
-from app import ma
+from app.core.app import ma
 from app.order.models import Order, OrderItem
 
 

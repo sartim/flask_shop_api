@@ -7,12 +7,12 @@ from flask_jwt_extended import (
     get_jwt_identity
 )
 
-from app import app
 from app.core.base_resource import BaseResource
 from app.core.helpers.decorators import content_type, validator
 from app.user.models import User
 from app.auth.schemas import AuthSchema
 from app.core.helpers import password_helper
+from core.app import app
 
 
 class GenerateJwtApi(BaseResource):

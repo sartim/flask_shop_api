@@ -2,7 +2,7 @@ import json
 from functools import wraps
 from flask import request
 from marshmallow import ValidationError
-from app import app
+from app.core.app import app
 from app.core.constants import ResponseMessage
 from app.user.models import User
 

@@ -2,7 +2,7 @@ import json
 
 import redis
 
-from app import app
+from app.core.app import app
 
 redis_url = app.config.get("REDIS_URL")
 redis_url_string = redis_url.split("//")[1]

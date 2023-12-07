@@ -1,5 +1,5 @@
 from app.core.base_model import BaseModel
-from app import db
+from app.core.app import db
 from app.status.models import Status
 from sqlalchemy.dialects.postgresql import UUID
 

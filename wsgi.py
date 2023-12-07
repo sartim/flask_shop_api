@@ -2,7 +2,7 @@ import logging
 import os
 import sys
 
-from app import app, socketio
+from app.core.app import app, socketio
 from app.core.helpers.jwt_handlers import *
 from app.core.callbacks import *
 from app.auth import routes

@@ -1,4 +1,4 @@
-from app import app
+from app.core.app import app
 
 
 def register_api(view, endpoint, url, pk='_id', pk_type='int'):

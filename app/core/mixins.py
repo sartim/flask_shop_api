@@ -1,6 +1,6 @@
 import os
 
-from app import db
+from app.core.app import db
 from app.core.indexing import add_to_index, remove_from_index, query_index
 
 
