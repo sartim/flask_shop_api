@@ -217,11 +217,12 @@ class AbstractBaseModel(db.Model):
     @staticmethod
     def paginated_result_caching(paginated_data):
         key = request.full_path
-        if not redis.cache.exists(app.config.get("CACHED_QUERY")):
-            redis.cache.hset(app.config.get("CACHED_QUERY"), b'na', b'na')
-            redis.cache.expire(
-                app.config.get("CACHED_QUERY"),
-                int(app.config.get("REDIS_EXPIRE")))
+        if redis.cache:
+            if not redis.cache.exists(app.config.get("CACHED_QUERY")):
+                redis.cache.hset(app.config.get("CACHED_QUERY"), b'na', b'na')
+                redis.cache.expire(
+                    app.config.get("CACHED_QUERY"),
+                    int(app.config.get("REDIS_EXPIRE")))
         cached_result = redis.hmget_payload(
             app.config.get("CACHED_QUERY"), key
         )

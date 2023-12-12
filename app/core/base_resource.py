@@ -18,7 +18,7 @@ class BaseResource(MethodView):
     schema = None
     request_args = None
 
-    @check_permission()
+    # @check_permission()
     def get(self, _id=None):
         endpoint = request.endpoint[:-4].upper()
         if _id:
@@ -44,7 +44,7 @@ class BaseResource(MethodView):
 
     @content_type(['application/json'])
     @validator()
-    @check_permission()
+    # @check_permission()
     def post(self):
         data = request.json
         try:
@@ -70,7 +70,7 @@ class BaseResource(MethodView):
 
     @content_type(['application/json'])
     @validator()
-    @check_permission()
+    # @check_permission()
     def put(self, _id):
         endpoint = request.endpoint[:-4].upper()
         obj = self.model.get_by_id(_id, **dict(endpoint=endpoint))
@@ -94,7 +94,7 @@ class BaseResource(MethodView):
         )
         return self.response(result, 200)
 
-    @check_permission()
+    # @check_permission()
     def delete(self, _id):
         endpoint = request.endpoint[:-4].upper()
         obj = self.model.get_by_id(_id, **dict(endpoint=endpoint))
