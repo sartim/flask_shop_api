@@ -9,13 +9,14 @@ from sqlalchemy import desc
 
 from app.core.base_resource import BaseResource
 from app.product.models import Product
-from app.product.schemas import ProductSchema
+from app.product.schemas import ProductSchema, product_args_schema
 
 
 class ProductApi(BaseResource):
     decorators = [cross_origin(), jwt_required()]
     model = Product
     schema = ProductSchema
+    request_args = product_args_schema
 
 
 class DownloadProductApi(BaseResource):

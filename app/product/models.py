@@ -22,11 +22,14 @@ class Product(BaseModel, SearchableMixin):
     image_urls = db.Column(db.Text, nullable=True)
     price = db.Column(db.DECIMAL(precision=10, scale=2))
     category_id = db.Column(UUID(as_uuid=True), db.ForeignKey('category.id'))
+    deleted = db.Column(db.Boolean, default=False)
 
     category = db.relationship(Category, lazy=True)
     reviews = db.relationship(Review, lazy=True)
 
-    def __init__(self, id=None, name=None, brand=None, items=None, image_urls=None, price=None, category_id=None):
+    def __init__(
+            self, id=None, name=None, brand=None, items=None,
+            image_urls=None, price=None, category_id=None, deleted=None):
         self.id = id
         self.name = name
         self.brand = brand
@@ -34,6 +37,7 @@ class Product(BaseModel, SearchableMixin):
         self.image_urls = image_urls
         self.price = price
         self.category_id = category_id
+        self.deleted = deleted
 
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, self.id)
