@@ -54,7 +54,7 @@ jobs:
         APP_EMAIL_PASSWORD: ${{ secrets.APP_EMAIL_PASSWORD }}
         LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
         CACHED_QUERY: ${{ secrets.CACHED_QUERY }}
-  Deploy:
+  deploy:
     runs-on: ubuntu-latest
     needs: test
     strategy:
