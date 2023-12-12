@@ -106,7 +106,7 @@ class User(BaseModel):
                 .first_or_404(description="Record not found.")
 
     @classmethod
-    def get_all(cls, ids, **kwargs):
+    def get_all(cls, **kwargs):
         page = kwargs.get("page")
         limit = kwargs.get("limit")
         sort = kwargs.get("sort")
@@ -136,8 +136,6 @@ class User(BaseModel):
             query = query.filter(cls.updated_at <= end_updated_at). \
                 filter(cls.updated_at >= start_updated_at)
 
-        if ids:
-            query = query.filter(cls.id.in_(ids))
         if not sort or sort == "desc":
             if sort_by == "create_at":
                 query = query.order_by(desc(cls.created_at))

@@ -33,7 +33,7 @@ class BaseResource(MethodView):
         params = parser.parse(self.request_args, request, location='querystring')
 
         params.update(endpoint=endpoint)
-        results = self.model.get_all_data(self.schema, None, **params)
+        results = self.model.get_all_data(self.schema, **params)
         return self.response(results)
 
     @content_type(['application/json'])
