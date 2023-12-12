@@ -160,7 +160,7 @@ class AbstractBaseModel(db.Model):
         return data
 
     @classmethod
-    def get_all(cls, ids, **kwargs):
+    def get_all(cls, **kwargs):
         page = kwargs.get("page")
         limit = kwargs.get("limit")
         sort = kwargs.get("sort")
@@ -197,8 +197,6 @@ class AbstractBaseModel(db.Model):
             query = query.filter(cls.updated_at <= end_updated_at). \
                 filter(cls.updated_at >= start_updated_at)
 
-        if ids:
-            query = query.filter(cls.id.in_(ids))
         if not sort or sort == "desc":
             if sort_by == "create_at":
                 query = query.order_by(desc(cls.created_at))
@@ -234,13 +232,13 @@ class AbstractBaseModel(db.Model):
             return paginated_data
 
     @classmethod
-    def get_all_data(cls, schema, ids, **kwargs):
+    def get_all_data(cls, schema, **kwargs):
         key = request.full_path
         cached_result = redis.hmget_payload(
             app.config.get("CACHED_QUERY"), key
         )
         if not cached_result:
-            paginated_object = cls.get_all(ids, **kwargs)
+            paginated_object = cls.get_all(**kwargs)
             paginated_data = dict(
                 next_page=paginated_object.next_num,
                 prev_page=paginated_object.prev_num,
