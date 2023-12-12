@@ -125,9 +125,10 @@ def add_product_data():
             category, msg = Category(**category_item).create()
             if category:
                 is_saved, _ = category.save()
-                product.category_id = category.id
-                product.items = items
-                product.save()
+                if product:
+                    product.category_id = category.id
+                    product.items = items
+                    product.save()
 
     click.echo("Successfully finished loading data")
 
