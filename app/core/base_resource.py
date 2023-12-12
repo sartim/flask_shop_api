@@ -31,15 +31,9 @@ class BaseResource(MethodView):
             result = obj.to_dict(self.schema, obj)
             return self.response(result)
         params = parser.parse(self.request_args, request, location='querystring')
-        id_list = request.args.getlist("id")
-        ids = None
-        if len(id_list) > 1:
-            del params["id"]
-            ids = id_list
+
         params.update(endpoint=endpoint)
-        if "deleted" not in params:
-            params.update(deleted=False)
-        results = self.model.get_all_data(self.schema, ids, **params)
+        results = self.model.get_all_data(self.schema, **params)
         return self.response(results)
 
     @content_type(['application/json'])
@@ -104,7 +98,7 @@ class BaseResource(MethodView):
             app.logger.warning("Record {} retrieval error. {}".format(
                 _id, result))
             return self.response(result, 410)
-        if delete_type == "soft":
+        if delete_type == "soft-delete":
             obj.deleted = True
             result, msg = obj.save()
         else:

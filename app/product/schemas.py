@@ -1,13 +1,13 @@
 from marshmallow import fields
-from marshmallow.schema import BaseSchema
 from app.core.app import ma
 from app.product.models import Product
-from app.core.base_schema import base_args_schema
+from app.core.base_schema import (base_args_schema, BaseSchema)
 
 
 class ProductSchema(ma.SQLAlchemySchema, BaseSchema):
     class Meta:
         model = Product
+        load_instance = True
 
 
 product_args_schema = {
