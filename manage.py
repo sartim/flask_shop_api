@@ -114,16 +114,21 @@ def add_product_data():
             name = row[21]
             category = row[22]
             items = random.randint(5, 50)
-            product = Product(
-                id=str(uuid.uuid4()), name=name, price=price, brand=brand,
-                image_urls=image_urls
-            )
-            category = Category(id=str(uuid.uuid4()), name=category)
-            is_saved, _ = category.save()
-            if is_saved:
+            product_item = dict(id=str(uuid.uuid4()), name=name, price=price, brand=brand,
+                image_urls=image_urls)
+
+            product, msg = Product(**product_item).create()
+            if product:
+                product.save()
+
+            category_item = dict(id=str(uuid.uuid4()), name=category)
+            category, msg = Category(**category_item).create()
+            if category:
+                is_saved, _ = category.save()
                 product.category_id = category.id
                 product.items = items
                 product.save()
+
     click.echo("Successfully finished loading data")
 
 
