@@ -5,6 +5,14 @@ from app.core.base_schema import (base_args_schema, BaseSchema)
 
 
 class ProductSchema(ma.SQLAlchemySchema, BaseSchema):
+    name = fields.Str(required=True)
+    brand = fields.Str(required=True)
+    items = fields.Int(required=True)
+    image_urls = fields.Str()
+    price = fields.Float(required=True)
+    category_id = fields.Str(required=True)
+    deleted = fields.Bool()
+
     class Meta:
         model = Product
         load_instance = True
