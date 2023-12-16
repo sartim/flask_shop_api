@@ -6,7 +6,6 @@ from flask_jwt_extended import (
     jwt_required,
     get_jwt_identity
 )
-
 from app.core.base_resource import BaseResource
 from app.core.helpers.decorators import content_type, validator
 from app.user.models import User
@@ -61,6 +60,22 @@ class RefreshJwtApi(BaseResource):
 
     def post(self):
         current_user = get_jwt_identity()
-        result = dict(
-            access_token=create_access_token(identity=current_user))
-        return self.response(result)
+        user = User.get_user_by_email(current_user)
+        if user:
+            result = dict(
+                access_token=create_access_token(identity=current_user),
+                refresh_token=create_refresh_token(identity=current_user),
+                user=dict(
+                    id=user.id,
+                    full_name="{} {}".format(
+                        user.first_name,
+                        user.last_name),
+                    email=user.email,
+                    roles=[user_role.role.name for user_role in user.roles]
+                )
+            )
+            return self.response(result)
+        message = "Invalid Refresh Token"
+        app.logger.warning(message)
+        result = dict(message=message)
+        return self.response(result, 401)
