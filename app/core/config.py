@@ -22,7 +22,7 @@ class BaseConfig(object):
     CACHED_QUERY = os.environ.get("CACHED_QUERY")
     REDIS_EXPIRE = os.environ.get('REDIS_EXPIRE')
     JWT_ACCESS_TOKEN_EXPIRES = 300
-    JWT_REFRESH_TOKEN_EXPIRES = 300
+    JWT_REFRESH_TOKEN_EXPIRES = 400
     JWT_ERROR_MESSAGE_KEY = "message"
     PAGINATE_BY = os.environ.get("PAGINATE_BY")
     LOG_LEVEL = os.environ.get("LOG_LEVEL")
