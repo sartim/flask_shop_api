@@ -2,6 +2,7 @@ from marshmallow import fields
 from app.core.app import ma
 from app.product.models import Product
 from app.core.base_schema import (base_args_schema, BaseSchema)
+from category.schemas import CategorySchema
 
 
 class ProductSchema(ma.SQLAlchemySchema, BaseSchema):
@@ -12,6 +13,8 @@ class ProductSchema(ma.SQLAlchemySchema, BaseSchema):
     price = fields.Float(required=True)
     category_id = fields.Str(required=True)
     deleted = fields.Bool()
+    category = fields.Nested(CategorySchema())
+
 
     class Meta:
         model = Product

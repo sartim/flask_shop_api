@@ -6,6 +6,10 @@ from app.core.base_schema import base_args_schema
 
 
 class CategorySchema(ma.SQLAlchemySchema, BaseSchema):
+    name = fields.Str(required=True)
+    description = fields.Str(required=True)
+    deleted = fields.Bool()
+
     class Meta:
         model = Category
 
