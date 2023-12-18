@@ -2,7 +2,7 @@ from marshmallow import fields
 from app.core.app import ma
 from app.product.models import Product
 from app.core.base_schema import (base_args_schema, BaseSchema)
-from category.schemas import CategorySchema
+from app.category.schemas import CategorySchema
 
 
 class ProductSchema(ma.SQLAlchemySchema, BaseSchema):
