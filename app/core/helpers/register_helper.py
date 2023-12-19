@@ -1,4 +1,4 @@
-def register_api(blue_print, view, endpoint, url, pk='_id', pk_type='int'):
+def register_api(blue_print, view, endpoint, url, pk='_id', pk_type='string'):
     view_func = view.as_view(endpoint)
     blue_print.add_url_rule(
         url, defaults={pk: None},
