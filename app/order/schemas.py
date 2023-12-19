@@ -17,6 +17,7 @@ class OrderItemSchema(ma.SQLAlchemySchema, BaseSchema):
 
 
 class OrderSchema(ma.SQLAlchemySchema, BaseSchema):
+    id = fields.Int()
     user_id = fields.Str(required=True)
     status_id = fields.Str(required=True)
     order_total = fields.Float(required=True)
