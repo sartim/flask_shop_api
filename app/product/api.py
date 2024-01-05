@@ -7,12 +7,12 @@ from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
 from sqlalchemy import desc
 
-from app.core.base_resource import BaseResource
+from app.core.base_resource import BaseResource, UnauthorizedBaseResource
 from app.product.models import Product
 from app.product.schemas import ProductSchema, product_args_schema
 
 
-class ProductApi(BaseResource):
+class ProductApi(UnauthorizedBaseResource):
     decorators = [cross_origin(), jwt_required()]
     model = Product
     schema = ProductSchema

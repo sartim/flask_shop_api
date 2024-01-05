@@ -18,7 +18,7 @@ class BaseResource(MethodView):
     schema = None
     request_args = None
 
-    # @check_permission()
+    @check_permission()
     def get(self, _id=None):
         endpoint = request.endpoint[:-4].upper()
         if _id:
@@ -38,7 +38,7 @@ class BaseResource(MethodView):
 
     @content_type(['application/json'])
     @validator()
-    # @check_permission()
+    @check_permission()
     def post(self):
         data = request.json
         try:
@@ -64,7 +64,7 @@ class BaseResource(MethodView):
 
     @content_type(['application/json'])
     @validator()
-    # @check_permission()
+    @check_permission()
     def put(self, _id):
         endpoint = request.endpoint[:-4].upper()
         obj = self.model.get_by_id(_id, **dict(endpoint=endpoint))
@@ -88,7 +88,7 @@ class BaseResource(MethodView):
         )
         return self.response(result, 200)
 
-    # @check_permission()
+    @check_permission()
     def delete(self, _id):
         endpoint = request.endpoint[:-4].upper()
         obj = self.model.get_by_id(_id, **dict(endpoint=endpoint))
@@ -119,6 +119,31 @@ class BaseResource(MethodView):
     @staticmethod
     def delete_cached_query():
         redis.delete(app.config.get("CACHED_QUERY"))
+
+
+class UnauthorizedBaseResource(BaseResource):
+    decorators = [cross_origin()]
+    model = None
+    schema = None
+    request_args = None
+
+    def get(self, _id=None):
+        endpoint = request.endpoint[:-4].upper()
+        if _id:
+            obj = self.model.get_by_id(_id, **dict(endpoint=endpoint))
+            if obj.deleted:
+                result = dict(message=ResponseMessage.RECORD_ALREADY_DELETED)
+                app.logger.warning("Record {} retrieval error. {}".format(
+                    _id, result))
+                return self.response(result, 410)
+            result = obj.to_dict(self.schema, obj)
+            return self.response(result)
+        params = parser.parse(self.request_args, request,
+                              location='querystring')
+
+        params.update(endpoint=endpoint)
+        results = self.model.get_all_data(self.schema, **params)
+        return self.response(results)
 
 
 class ChildBaseResource(BaseResource):
