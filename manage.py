@@ -144,7 +144,6 @@ def create():
     db.create_all()
     def process():
         add_roles()
-        add_users()
         add_order_statuses()
         add_product_data()
         click.echo("Finished creating tables!!! \n")
