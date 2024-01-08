@@ -1,0 +1,62 @@
+[
+  {
+    "first_name": "Admin",
+    "middle_name": null,
+    "last_name": "User",
+    "email": "admin@mail.com",
+    "phone": "254719273625",
+    "password": "admin_pass",
+    "token": null,
+    "image": null,
+    "is_active": true,
+    "roles": ["SUPERUSER"]
+  },
+  {
+     "first_name": "Test1",
+    "middle_name": null,
+    "last_name": "Test1",
+    "email": "test1@mail.com",
+    "phone": "254718372615",
+    "password": "test_pass",
+    "token": null,
+    "image": null,
+    "is_active": true,
+    "roles": ["ADMIN"]
+  },
+  {
+    "first_name": "Test2",
+    "middle_name": null,
+    "last_name": "Test2",
+    "email": "test2@mail.com",
+    "phone": "254711123456",
+    "password": "test_pass",
+    "token": null,
+    "image": null,
+    "is_active": true,
+    "roles": ["ADMIN"]
+  },
+  {
+    "first_name": "Test3",
+    "middle_name": null,
+    "last_name": "Test3",
+    "email": "test3@mail.com",
+    "phone": "254711495832",
+    "password": "test_pass",
+    "token": null,
+    "image": null,
+    "is_active": true,
+    "roles": ["ADMIN"]
+  },
+  {
+    "first_name": "Test3",
+    "middle_name": null,
+    "last_name": "Test3",
+    "email": "demo@mail.com",
+    "phone": "211123452323",
+    "password": "demo_pass",
+    "token": null,
+    "image": null,
+    "is_active": true,
+    "roles": ["ADMIN"]
+  }
+]
