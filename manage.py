@@ -71,6 +71,26 @@ def add_roles():
         return objects
 
 
+def add_users():
+    with open('data/users.json') as json_file:
+        items = json.load(json_file)
+
+        def process(item):
+            roles = item['roles']
+            del item['roles']
+            item['password'] = password_helper.generate_password_hash(
+                item['password'])
+            obj, msg = User(**item).create()
+            # roles = [Role.get_by_name(role) for role in roles]
+            if obj:
+                # obj.roles = [UserRole(obj.id, role.id) for role in roles]
+                obj.save()
+
+        objects = [process(item) for item in items]
+        click.echo("Finished adding users")
+        return objects
+
+
 def add_order_statuses():
     with open('data/statuses.json') as json_file:
         items = json.load(json_file)
