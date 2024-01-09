@@ -28,13 +28,6 @@ RUN apt-get update && apt-get install -y \
     build-essential libssl-dev libffi-dev python3-dev \
     python3-pip python3-venv redis-server wget python3.8-dev
 
-#RUN cd /usr/src && \
-#    wget https://www.python.org/ftp/python/3.8.10/Python-3.8.10.tgz && \
-#    tar xzf Python-3.8.10.tgz && \
-#    cd Python-3.8.10 && \
-#    ./configure --enable-optimizations && \
-#    make install
-
 # Setup flask application
 RUN mkdir -p /home/ubuntu/app
 ADD . /home/ubuntu/app
@@ -45,4 +38,4 @@ RUN pip3 install -r requirements.txt
 
 # Start gunicorn server
 ENTRYPOINT [ "gunicorn" ]
-CMD ["--worker-class", "eventlet", "-w", "1", "wsgi:app"]
+CMD ["--worker-class", "eventlet", "-w", "1", "-b", "0.0.0.0:8000", "--timeout", "300", "wsgi:app"]
