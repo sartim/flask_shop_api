@@ -13,8 +13,12 @@ if redis_url:
     host = split_string[0]
     port = int(split_string[1])
     cache = redis.from_url(url=redis_url, db=0)
-    if not cache.ping():
-        app.logger.exception('Redis ping failed for connection')
+    try:
+        if not cache.ping():
+            app.logger.exception('Redis ping failed for connection')
+    except Exception as e:
+        app.logger.exception(e)
+    else:
         cache = None
 
 

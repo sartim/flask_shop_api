@@ -24,7 +24,7 @@ REST API which exposes endpoints both for an online shop and a CMS admin. It's d
 
     $ virtualenv <envname> -p python3
     $ source <envname>/bin/activate
-    $ pip install -r requirements.txt --use-feature=2020-resolver 
+    $ pip install -r requirements.txt
 
 **Make migrations**
 
@@ -67,12 +67,26 @@ When using sqlite for test
 
 **Running app using gunicorn**
 
-    $ gunicorn --worker-class eventlet -w 1 wsgi:app
+    $ gunicorn --worker-class eventlet -w 1 -b 0.0.0.0:8000 --timeout 300 wsgi:app
     
 **Building & running on docker**
 
-    $ docker build -t flask-shop-api:latest .
+    $ docker build --build-arg ENV=PROD --build-arg PAGINATE_BY=20 --build-arg CACHED_QUERY=CACHED_QUERY --build-arg REDIS_EXPIRE=3600 --build-arg SECRET_KEY=my_secret --build-arg REDIS_URL=redis://host:port --build-arg DATABASE_URL=postgresql://username:password@hostname:5432/database --build-arg ADMIN_EMAIL=test@mail.com --build-arg APP_EMAIL=test@email.com --build-arg APP_EMAIL_PASSWORD=password --build-arg LOG_LEVEL=ERROR -t flask-shop-api:latest .
+    $ docker run -p 8000:8000 flask-shop-api
 
+
+**Building & running on k8**
+
+    $ docker build --build-arg ENV=PROD --build-arg PAGINATE_BY=20 --build-arg CACHED_QUERY=CACHED_QUERY --build-arg REDIS_EXPIRE=3600 --build-arg SECRET_KEY=my_secret --build-arg REDIS_URL=redis://host:port --build-arg DATABASE_URL=postgresql://username:password@hostname:5432/database --build-arg ADMIN_EMAIL=test@mail.com --build-arg APP_EMAIL=test@email.com --build-arg APP_EMAIL_PASSWORD=password --build-arg LOG_LEVEL=ERROR -t flask-shop-api:latest .
+    $ eval $(minikube docker-env)
+    $ kubectl apply -f k8deploy.yaml
+    $ kubectl expose deployment flask-shop-api-deploy --type=NodePort --port=8000
+    $ minikube service flask-shop-api-deploy
+
+Optional forwarding port
+
+    $ kubectl port-forward service/flask-shop-api-deploy 5001:8000
+  
 **Running unittests**
     
 First setup the .env for test environment then run the following command from project root:
