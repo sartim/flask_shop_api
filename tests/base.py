@@ -6,7 +6,7 @@ from sqlalchemy import text
 
 from app.core.app import app, db
 from manage import (
-    add_roles, add_users, add_product_data, create_superuser_role_permissions,
+    add_roles, add_product_data, create_superuser_role_permissions,
     create_service_permissions_on_redis, create_service_permissions_to_db)
 from app.role.models import Role
 from app.user.models import UserRole
@@ -43,7 +43,6 @@ class Base:
             upgrade()
             db.create_all()
             add_roles()
-            add_users()
             add_product_data()
             create_service_permissions_on_redis()
             create_service_permissions_to_db()
