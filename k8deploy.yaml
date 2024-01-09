@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-shop-api-deploy
+  labels:
+    app: flask-shop-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-shop-api
+  template:
+    metadata:
+      labels:
+        app: flask-shop-api
+    spec:
+      containers:
+      - name: flask-shop-api
+        image: flask-shop-api:latest
+        imagePullPolicy: Never
+        resources:
+          limits:
+            cpu: 1
+            memory: 256Mi
+        ports:
+          - name: flask-shop-api-port
+            containerPort: 8000
+        livenessProbe:
+          httpGet:
+            path: /
+            port: flask-shop-api-port
+        readinessProbe:
+          httpGet:
+            path: /
+            port: flask-shop-api-port
+        startupProbe:
+          httpGet:
+            path: /
+            port: flask-shop-api-port
