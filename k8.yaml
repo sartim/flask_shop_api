@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: flask-shop-api-deploy
+  namespace: default
   labels:
     app: flask-shop-api
 spec:
@@ -23,17 +24,33 @@ spec:
             cpu: 1
             memory: 256Mi
         ports:
-          - name: flask-shop-api-port
+          - name: flask-port
             containerPort: 8000
         livenessProbe:
           httpGet:
             path: /
-            port: flask-shop-api-port
+            port: flask-port
         readinessProbe:
           httpGet:
             path: /
-            port: flask-shop-api-port
+            port: flask-port
         startupProbe:
           httpGet:
             path: /
-            port: flask-shop-api-port
+            port: flask-port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name:  flask-shop-api-service
+  labels:
+    app: flask-shop-api
+spec:
+  ports:
+  - port: 8000
+    protocol: TCP
+    targetPort: 8000
+    nodePort: 30001
+  selector:
+    app: flask-shop-api
+  type: NodePort

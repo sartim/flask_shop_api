@@ -1,5 +1,4 @@
 import json
-
 import redis
 
 from app.core.app import app
@@ -18,8 +17,6 @@ if redis_url:
             app.logger.exception('Redis ping failed for connection')
     except Exception as e:
         app.logger.exception(e)
-    else:
-        cache = None
 
 
 def hset_payload(name, key, payload):
