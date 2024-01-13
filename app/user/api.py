@@ -8,7 +8,8 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy import desc
 from app.core.app import app
 from app.core.base_resource import BaseResource
-from app.core.helpers.decorators import content_type, validator
+from app.core.helpers.decorators import (
+    content_type, validator, check_permission)
 from app.role.models import Role
 from app.user.models import User, UserRole
 from app.core.helpers import password_helper
@@ -22,6 +23,7 @@ class UserApi(BaseResource):
     request_args = user_args_schema
 
     @content_type(["application/json"])
+    @check_permission()
     @validator(schema)
     def post(self):
         if not request.is_json:
@@ -45,13 +47,15 @@ class UserApi(BaseResource):
             return self.response(result, 400)
 
     @content_type(["application/json"])
+    @check_permission()
     @validator()
-    def put(self, id=None):
+    def put(self, _id=None):
+        endpoint = request.endpoint[:-4].upper()
         logged_in_user = User.get_current_user()
         if not request.is_json:
             result = dict(message='Content type not json')
             return self.response(result, 400)
-        user_obj = User.get_by_id(id)
+        user_obj = User.get_by_id(_id, **dict(endpoint=endpoint))
         password = None
         if not user_obj:
             result = dict(message="User not found.")
