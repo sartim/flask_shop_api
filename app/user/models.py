@@ -92,13 +92,42 @@ class User(BaseModel):
         return False
 
     @classmethod
+    def check_has_update_permission(cls, endpoint):
+        return User.has_permission("CAN_UPDATE_CREATE_{}".format(endpoint))
+
+    @classmethod
+    def check_has_delete_permission(cls, endpoint):
+        return User.has_permission("CAN_DELETE_{}".format(endpoint))
+
+    @classmethod
+    def check_has_view_permission(cls, endpoint):
+        return User.has_permission("CAN_VIEW_ALL_{}".format(endpoint))
+
+    @classmethod
+    def check_has_view(cls, endpoint):
+        return User.has_permission("CAN_GET_{}".format(endpoint))
+
+    @classmethod
+    def check_has_create_permission(cls, endpoint):
+        return User.has_permission("CAN_CREATE_{}".format(endpoint))
+
+    @classmethod
+    def check_has_belonging_view_permission(cls, endpoint):
+        return User.has_permission("CAN_VIEW_BELONGING_{}".format(endpoint))
+
+    @classmethod
+    def check_has_belonging_update_permission(cls, endpoint):
+        return User.has_permission(
+            "CAN_UPDATE_CREATE_BELONGING_{}".format(endpoint))
+
+    @classmethod
     def get_curr_user_roles(cls):
         curr_user = cls.get_current_user()
         return [r.role.id for r in curr_user.roles]
 
     @classmethod
     def get_by_id(cls, _id, **kwargs):
-        if User.check_has_view_permission(kwargs["endpoint"]):
+        if User.check_has_view(kwargs["endpoint"]):
             return cls.query.filter_by(id=_id) \
                 .first_or_404(description="Record not found.")
         elif User.check_has_belonging_view_permission(kwargs["endpoint"]):
