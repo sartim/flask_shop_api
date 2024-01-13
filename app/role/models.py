@@ -41,6 +41,3 @@ class RolePermission(AbstractBaseModel):
     def __init__(self, role_id=None, permission_id=None):
         self.role_id = role_id
         self.permission_id = permission_id
-
-    def __repr__(self):
-        return "<%r (%r)>" % (self.__class__.__name__, self.name)

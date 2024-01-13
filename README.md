@@ -102,7 +102,7 @@ _(Optional)Install Ipython to get interactive shell using Ipython for the app_
 
 **Demo URL**
 
-`https://flask-shop-api-git-develop-sartims-projects.vercel.app`
+`https://flask-shop-api.vercel.app`
 
 ###### Login Credentials
 
