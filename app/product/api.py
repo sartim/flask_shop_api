@@ -13,7 +13,6 @@ from app.product.schemas import ProductSchema, product_args_schema
 
 
 class ProductApi(UnauthorizedBaseResource):
-    decorators = [cross_origin(), jwt_required()]
     model = Product
     schema = ProductSchema
     request_args = product_args_schema
