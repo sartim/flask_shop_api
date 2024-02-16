@@ -36,6 +36,7 @@ class BaseResource(MethodView):
         results = self.model.get_all_data(self.schema, **params)
         return self.response(results)
 
+    @jwt_required()
     @content_type(['application/json'])
     @validator()
     @check_permission()
