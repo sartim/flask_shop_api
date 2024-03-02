@@ -7,9 +7,9 @@ auth_api = Blueprint('auth_api', __name__)
 
 register_basic_api(
     auth_api, GenerateJwtApi, 'generate_jwt_api',
-    '/api/v1/auth/generate-jwt', methods=['POST']
+    '/auth/generate-jwt', methods=['POST']
 )
 register_basic_api(
     auth_api, RefreshJwtApi, 'refresh_jwt_api',
-    '/api/v1/auth/refresh-jwt',  methods=['POST']
+    '/auth/refresh-jwt',  methods=['POST']
 )
