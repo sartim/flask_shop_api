@@ -1,3 +1,7 @@
+class ApiVersion:
+    V1 = "v1"
+
+
 class ResponseMessage:
     RECORD_NOT_FOUND = "Record was not found."
     RECORD_SAVED = "Successfully saved record."
