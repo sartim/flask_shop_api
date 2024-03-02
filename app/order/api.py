@@ -1,7 +1,7 @@
 from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
 
-from app.core.base_resource import BaseResource
+from app.core.base_resource import BaseResource, ChildBaseResource
 from app.order.models import Order, OrderItem
 from app.order.schemas import (
     OrderSchema, OrderItemSchema, order_item_args_schema, order_args_schema)
@@ -14,11 +14,12 @@ class OrderApi(BaseResource):
     request_args = order_item_args_schema
 
 
-class OrderItemApi(BaseResource):
+class OrderItemApi(ChildBaseResource):
     decorators = [cross_origin(), jwt_required()]
-    model = OrderItem
     schema = OrderItemSchema
-    request_args = order_args_schema
+    model = OrderItem
+    field = 'order_id'
+    parent = Order
 
 
 class OrderTotalSumTodayApi(BaseResource):
