@@ -30,6 +30,7 @@ from app.permission import routes
 from app.status import routes
 from app.category import routes
 from app.product import routes
+from app.order import routes
 from app.core.helpers import password_helper
 from app.status.models import Status
 from app.core.helpers import permissions

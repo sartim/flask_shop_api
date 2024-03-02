@@ -7,5 +7,5 @@ permission_api = Blueprint('permission_api', __name__)
 
 register_api(
     permission_api, PermissionApi, 'permission_api',
-    '/api/v1/permissions', pk='_id'
+    '/permissions', pk='_id'
 )

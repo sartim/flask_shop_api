@@ -4,4 +4,4 @@ from app.role.api import RoleApi
 
 role_api = Blueprint('role_api', __name__)
 
-register_api(role_api, RoleApi, 'role_api', '/api/v1/roles', pk='_id')
+register_api(role_api, RoleApi, 'role_api', '/roles', pk='_id')

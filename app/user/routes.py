@@ -13,4 +13,4 @@ register_basic_api(
     '/api/v1/users/online', methods=['POST']
 )
 register_api(
-    user_api, UserApi, 'user_api', '/api/v1/users', pk='_id')
+    user_api, UserApi, 'user_api', '/users', pk='_id')
