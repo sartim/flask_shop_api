@@ -51,7 +51,7 @@ class Base:
             # Generate token for authentication header
             req = cls.client.post(
                 "/api/v1/auth/generate-jwt",
-                json=dict(email="demo@mail.com", password="demo_pass")
+                json=dict(email="admin@mail.com", password="admin_pass")
             )
             cls.headers = {
                 "Authorization": "Bearer {}".format(req.json["access_token"])
