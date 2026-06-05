@@ -28,7 +28,7 @@ class UserPermissionSchema(ma.SQLAlchemySchema, AbstractBaseSchema):
         load_instance = True
 
 
-class UserSchema(ma.SQLAlchemySchema, BaseSchema):
+class UserSchema(ma.SQLAlchemyAutoSchema, BaseSchema):
     id = fields.String()
     permissions = ma.List(ma.Nested(UserPermissionSchema(only=('permission',))))
     roles = ma.List(ma.Nested(UserRoleSchema(only=('role',))))
@@ -37,8 +37,8 @@ class UserSchema(ma.SQLAlchemySchema, BaseSchema):
         model = User
         fields = (
             'id', 'first_name', 'last_name', 'email', 'phone',
-            'is_verified', 'is_active', 'roles', 'organizations', 'image',
-            'created_at', 'updated_at', 'meta'
+            'is_active', 'roles', 'image',
+            'created_at', 'updated_at'
         )
         load_instance = True
 
